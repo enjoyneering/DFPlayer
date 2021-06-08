@@ -1,0 +1,72 @@
+#######################################
+# Syntax Coloring Map DFPlayer
+#######################################
+
+#######################################
+# Datatypes	(KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions	(KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+
+setTimeout	KEYWORD2
+setResponse	KEYWORD2
+
+setSource	KEYWORD2
+playTrack	KEYWORD2
+next	KEYWORD2
+previous	KEYWORD2
+pause	KEYWORD2
+resume	KEYWORD2
+stop	KEYWORD2
+
+playFolder	KEYWORD2
+playMP3Folder	KEYWORD2
+playAdvertFolder	KEYWORD2
+stopAdvertFolder	KEYWORD2
+
+setVolume	KEYWORD2
+volumeUp	KEYWORD2
+volumeDown	KEYWORD2
+enableDAC	KEYWORD2
+setDACGain	KEYWORD2
+setEQ	KEYWORD2
+
+repeatTrack	KEYWORD2
+repeatCurrentTrack	KEYWORD2
+repeatAll	KEYWORD2
+repeatFolder	KEYWORD2
+randomAll	KEYWORD2
+
+
+sleep	KEYWORD2
+wakeup	KEYWORD2
+enableStandby	KEYWORD2
+reset	KEYWORD2
+
+getStatus	KEYWORD2
+getVolume	KEYWORD2
+getEQ	KEYWORD2
+getPlayMode	KEYWORD2
+getVersion	KEYWORD2
+getTotalTracksSD	KEYWORD2
+getTotalTracksUSB	KEYWORD2
+getTotalTracksNORFlash	KEYWORD2
+getTrackSD	KEYWORD2
+getTrackUSB	KEYWORD2
+getTrackNORFlash	KEYWORD2
+getTotalTracksFolder	KEYWORD2
+getCommandStatus	KEYWORD2
+
+#######################################
+# Instances	(KEYWORD2)
+#######################################
+
+DFPlayer	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
