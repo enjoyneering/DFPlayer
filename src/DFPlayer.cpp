@@ -620,7 +620,6 @@ uint8_t DFPlayer::getStatus()
     default:
       return 0x04; //communication error or unknown state
   }
-
 }
 
 
