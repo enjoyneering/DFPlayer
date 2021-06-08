@@ -18,9 +18,11 @@ DFPlayer Mini features:
 - UART to communicate
 
 NOTE:
-- if you hear a loud noise, add a 1K resistor in series with DFPlayer TX-pin
-- move the jumper from right to left to automatically switch the amplifier to standby
-- if the files are in the root, they must contain 4 digits with leading zeros. For example: SD_ROOT/0001 - My favorite song.mp3. Player sorts the root by the time of writing to the card. Do not copy 0003.mp3 and then 0001.mp3 as 0003.mp3 will play first.
+- If you hear a loud noise, add a 1K resistor in series with DFPlayer TX-pin.
+- Move the jumper from right to left to automatically switch the amplifier to standby.
+- If the files are in the root, they must contain 4 digits with leading zeros. For example: SD_ROOT/0001 - My favorite song.mp3. Player sorts the root by the time of writing to the card. Do not copy 0003.mp3 and then 0001.mp3 as 0003.mp3 will play first.
+- Folders must contain 2 digits with leading zeros. Number of folders 01..99. Files inside must contain 3 digits with leading zeros. The number of files in each folder is 001..255. For example: SD_ROOT/01/001 - My favorite song.mp3. Unlike the root, files from folders can be read by the file number.
+- Folder "mp3" and "advert". Files inside this folders must contain 4 digits with leading zeros. The number of files is 0001..9999 and can be read by file number. For example: SD_ROOT/mp3/ 0001 - My favorite song.mp3. Files from "advert" are played only if a track is already playing. Then the module pauses the current one, plays the file from "advert" and unpauses the main one.
 
 
 Supports:
