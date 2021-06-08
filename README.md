@@ -38,4 +38,4 @@ Supports:
 [github-issues]: https://img.shields.io/github/issues/enjoyneering/DFPlayer.svg
 [issues]:        https://github.com/enjoyneering/DFPlayer/issues/
 
-[dfplayer_mini_mod_image]: https://github.com/enjoyneering/DFPlayer/blob/master/images/DFPlayer_Mini_Modification.png
+[dfplayer_mini_mod_image]: https://github.com/enjoyneering/DFPlayer/blob/main/images/DFPlayer_Mini_Modification.jpg
