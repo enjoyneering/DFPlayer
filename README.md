@@ -20,6 +20,7 @@ DFPlayer Mini features:
 NOTE:
 - if you hear a loud noise, add a 1K resistor in series with DFPlayer TX-pin
 - move the jumper from right to left to automatically switch the amplifier to standby
+- if the files are in the root, they must contain 4 digits with leading zeros. For example: SD_ROOT/0001 - My favorite song.mp3. Player sorts the root by the time of writing to the card. Do not copy 0003.mp3 and then 0001.mp3 as 0003.mp3 will play first.
 
 
 Supports:
