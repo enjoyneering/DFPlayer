@@ -112,7 +112,7 @@ void DFPlayer::setResponse(bool enable)
 void DFPlayer::setSource(uint8_t source)
 {
   if      (source == 0) source = 1;
-  else if (source >  5) source = 5;
+  else if (source >  6) source = 6;
 
   _sendData(DFPLAYER_SET_PLAY_SRC, 0, source);
 
@@ -529,9 +529,7 @@ void DFPlayer::sleep()
 /**************************************************************************/
 void DFPlayer::wakeup(uint8_t source)
 {
-  if (source == 6) return; //6=Sleep prohibited
-
-  setSource(source);
+  if (source != 6) setSource(source); //6=Sleep prohibited
 }
 
 
