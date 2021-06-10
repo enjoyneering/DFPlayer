@@ -593,7 +593,7 @@ void DFPlayer::reset()
         - xx=01 playing
         - xx=02 pause
       -yy=00
-        - xx=02 standby
+        - xx=02 standby/sleep
     - doesn't stop current playback
 */
 /**************************************************************************/
@@ -612,7 +612,7 @@ uint8_t DFPlayer::getStatus()
     case 0x0202:
       return 0x02; //pause
 
-    case 0x0001:
+    case 0x0002:
       return 0x03; //sleep or standby
 
     default:
