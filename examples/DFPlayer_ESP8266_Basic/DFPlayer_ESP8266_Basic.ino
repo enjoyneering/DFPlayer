@@ -31,6 +31,7 @@
 */
 /***************************************************************************************************/
 
+
 #include <SoftwareSerial.h>
 #include <DFPlayer.h>
 
@@ -73,11 +74,11 @@ void loop()
 //mp3.playMP3Folder(1);                            //1=track, folder name must be "mp3" or "MP3" & files in folder must start with 4 decimal digits with leading zeros
 //mp3.playFolder(1, 2);                            //1=folder/2=track, folder name must be 01..99 & files in folder must start with 3 decimal digits with leading zeros
 
-//mp3Serial.enableRx(true);                        //enable interrupts on RX-pin, if serial ISR/RX buffer shared with TX buffer (less overhead than mp3Serial.listen())
-
+//mp3Serial.enableRx(true);                        //enable interrupts on RX-pin for better response detection, less overhead than mp3Serial.listen()
+//Serial.println(mp3.getStatus());                 //0=stop, 1=playing, 2=pause, 3=sleep or standby, 4=communication error, 5=unknown state
 //Serial.println(mp3.getVolume());                 //0..30
 //Serial.println(mp3.getCommandStatus());          //1=Error, module busy|2=Error, module sleep|3=Error, request not fully received|4= Error, checksum not match
                                                    //5=Error, requested folder/track out of range|6=Error, requested folder/track not found|7=Error, advert available while track is playing
                                                    //8=Error, SD card not found|9=???|10=Error, module sleep|11=OK, command accepted|12=OK, playback completed|13=OK, module ready after reboot
-//mp3Serial.enableRx(false);                       //disable interrupts on RX-pin, if serial ISR/RX buffer shared with TX buffer (less overhead than mp3Serial.listen())
+//mp3Serial.enableRx(false);                       //disable interrupts on RX-pin, less overhead than mp3Serial.listen()
 }
