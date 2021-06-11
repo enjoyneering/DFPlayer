@@ -104,7 +104,7 @@ void DFPlayer::setResponse(bool enable)
 
     NOTE:
     - source will be selected automatically if only one is present
-    - this command interrupts playback
+    - this command interrupt playback
     - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep
     - wait 200ms to select source
 */
@@ -403,7 +403,7 @@ void DFPlayer::setEQ(uint8_t preset)
 
 /**************************************************************************/
 /*
-    setPlayMode()
+    repeatTrack()
 
     Playing & looping track number in chronological order
 
@@ -587,36 +587,48 @@ void DFPlayer::reset()
     Get current module status
 
     NOTE:
-    - 7E FF 06 42 00 yy xx ?? ?? EF
+    - this command does not interrupt current playback
+    - status list:
+      - 0, stop 
+      - 1, playing
+      - 2, pause
+      - 3, sleep or standby
+      - 4, communication error
+      - 5, unknown state
+
+    - module response:
+    - 7E FF 06 42 00 yy xx zz zz EF
       - yy=02 normal mode or TF??
         - xx=00 stop
         - xx=01 playing
         - xx=02 pause
       -yy=00
         - xx=02 standby/sleep
-    - doesn't stop current playback
 */
 /**************************************************************************/
 uint8_t DFPlayer::getStatus()
 {
   _sendData(DFPLAYER_GET_STATUS, 0, 0);
 
-  switch (_getResponse())
+  switch (_getResponse(DFPLAYER_GET_STATUS))
   {
     case 0x0200:     
-      return 0x00; //stop 
+      return 0; //stop 
 
     case 0x0201:
-      return 0x01; //playing
+      return 1; //playing
 
     case 0x0202:
-      return 0x02; //pause
+      return 2; //pause
 
     case 0x0002:
-      return 0x03; //sleep or standby
+      return 3; //sleep or standby
+
+    case 0x0000:
+      return 4; //communication error
 
     default:
-      return 0x04; //communication error or unknown state
+      return 5; //unknown state
   }
 }
 
@@ -629,7 +641,7 @@ uint8_t DFPlayer::getStatus()
 
     NOTE:
     - volume range 0..30
-    - doesn't stop current playback
+    - this command does not interrupt current playback
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -637,7 +649,7 @@ uint8_t DFPlayer::getVolume()
 {
   _sendData(DFPLAYER_GET_VOL, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_VOL);
 }
 
 
@@ -649,7 +661,7 @@ uint8_t DFPlayer::getVolume()
 
     NOTE:
     - 0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass
-    - doesn't stop current playback
+    - this command does not interrupt current playback
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -657,7 +669,7 @@ uint8_t DFPlayer::getEQ()
 {
   _sendData(DFPLAYER_GET_EQ, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_EQ);
 }
 
 
@@ -669,7 +681,7 @@ uint8_t DFPlayer::getEQ()
 
     NOTE:
     - 0=loop all, 1=loop folder, 2=loop track, 3=random, 4=disable
-    - doesn't stop current playback
+    - this command does not interrupt current playback
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -677,7 +689,7 @@ uint8_t DFPlayer::getPlayMode()
 {
   _sendData(DFPLAYER_GET_PLAY_MODE, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_PLAY_MODE);
 }
 
 
@@ -689,7 +701,7 @@ uint8_t DFPlayer::getPlayMode()
 
     NOTE:
     - my module return 0x08
-    - doesn't stop current playback
+    - this command does not interrupt current playback
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -697,7 +709,7 @@ uint8_t DFPlayer::getVersion()
 {
   _sendData(DFPLAYER_GET_VERSION, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_VERSION);
 }
 
 
@@ -709,15 +721,15 @@ uint8_t DFPlayer::getVersion()
 
     NOTE:
     - return number even if SD card is removed
-    - stop current playback
     - return "0" on communication error
+    - this command interrupt current playback
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTotalTracksSD()
 {
   _sendData(DFPLAYER_GET_QNT_TF_FILES, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_QNT_TF_FILES);
 }
 
 
@@ -729,14 +741,14 @@ uint16_t DFPlayer::getTotalTracksSD()
 
     NOTE:
     - return "0" on communication error
-    - stop current playback
+    - this command interrupt current playback
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTotalTracksUSB()
 {
   _sendData(DFPLAYER_GET_QNT_USB_FILES, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_QNT_USB_FILES);
 }
 
 
@@ -748,14 +760,14 @@ uint16_t DFPlayer::getTotalTracksUSB()
 
     NOTE:
     - return "0" on communication error
-    - stop current playback
+    - this command interrupt current playback
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTotalTracksNORFlash()
 {
   _sendData(DFPLAYER_GET_QNT_FLASH_FILES, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_QNT_FLASH_FILES);
 }
 
 
@@ -778,7 +790,7 @@ uint16_t DFPlayer::getTrackSD()
 {
   _sendData(DFPLAYER_GET_TF_TRACK, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_TF_TRACK);
 }
 
 
@@ -800,7 +812,7 @@ uint16_t DFPlayer::getTrackUSB()
 {
   _sendData(DFPLAYER_GET_USB_TRACK, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_USB_TRACK);
 }
 
 
@@ -819,7 +831,7 @@ uint16_t DFPlayer::getTrackNORFlash()
 {
   _sendData(DFPLAYER_GET_FLASH_TRACK, 0, 0);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_FLASH_TRACK);
 }
 
 
@@ -831,14 +843,14 @@ uint16_t DFPlayer::getTrackNORFlash()
 
     NOTE:
     - return "0" on communication error
-    - stop current playback
+    - this command interrupt current playback
 */
 /**************************************************************************/
 uint8_t DFPlayer::getTotalTracksFolder(uint8_t folder)
 {
   _sendData(DFPLAYER_GET_QNT_FOLDER_FILES, 0, folder);
 
-  return _getResponse();
+  return _getResponse(DFPLAYER_GET_QNT_FOLDER_FILES);
 }
 
 
@@ -942,10 +954,9 @@ uint8_t DFPlayer::_readData()
   if (_dataBuffer[0] != DFPLAYER_UART_START_BYTE) return 1;                     //start byte missing
   if (_dataBuffer[1] != DFPLAYER_UART_VERSION)    return 2;                     //version byte missing
   if (_dataBuffer[2] != DFPLAYER_UART_DATA_LEN)   return 3;                     //length byte missing
-  if (_dataBuffer[3] == DFPLAYER_RETURN_ERROR)    return 4;                     //error received, call getCommandStatus() for details
-  if (_dataBuffer[9] != DFPLAYER_UART_END_BYTE)   return 5;                     //end byte missing
+  if (_dataBuffer[9] != DFPLAYER_UART_END_BYTE)   return 4;                     //end byte missing
 
-                                                  return 6;                     //OK, no errors!!!
+                                                  return 5;                     //OK, no errors!!!
 }
 
 
@@ -959,8 +970,8 @@ uint8_t DFPlayer::_readData()
     - return "0" on communication error
 */
  /**************************************************************************/
-uint16_t DFPlayer::_getResponse()
+uint16_t DFPlayer::_getResponse(uint8_t command)
 {
-  if (_readData() == 6) return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6]; 
-                        return 0;
+  if (_readData() == 5 && _dataBuffer[3] == command) return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6]; 
+                                                     return 0;
 }
