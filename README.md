@@ -1,7 +1,7 @@
 [![license-badge][]][license] ![version] [![stars][]][stargazers] ![hit-count] [![github-issues][]][issues]
 
 # DFPlayer Mini
-This is small and fast Arduino library for DFPlayer Mini MP3 Player. Supports all modules features.
+This is small and fast Arduino library for DFPlayer Mini, FN-M16P & FN-M10P MP3 Player. Supports all modules features.
 
 ![alt text][dfplayer_mini_mod_image]
 
