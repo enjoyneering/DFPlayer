@@ -11,8 +11,8 @@ DFPlayer Mini features:
 - 24-bit DAC
 - 90dB output dynamic range
 - SNR over 85dB
-- micro SD card up to 32GB (FAT16, FAT32)
-- USB-Disk up to 32GB (FAT16, FAT32)
+- micro SD, card up to 32GB (FAT16, FAT32)
+- USB-Disk, up to 32GB (FAT16, FAT32)
 - supports up to 100 folders, each folder can be assigned to 001..255 songs
 - built-in 3W mono amplifier, MD8002 AB-Class
 - UART to communicate
@@ -24,6 +24,60 @@ NOTE:
 - Folders must contain 2 digits with leading zeros. Number of folders 01..99. Files inside must contain 3 digits with leading zeros. The number of files in each folder is 001..255. For example: SD_ROOT/01/001 - My favorite song.mp3. Unlike the root, files from folders can be read by the file number.
 - Folder "mp3" and "advert". Files inside this folders must contain 4 digits with leading zeros. The number of files is 0001..9999 and can be read by file number. For example: SD_ROOT/mp3/ 0001 - My favorite song.mp3. Files from "advert" are played only if a track is already playing. Then the module pauses the current one, plays the file from "advert" and unpauses the main one.
 
+## Library API:
+```c++
+void begin(Stream& stream, uint16_t threshold = 100, bool response = false, bool bootDelay = true);
+
+void setTimeout(uint16_t threshold); //usually 100msec..200msec
+void setResponse(bool enable);
+
+void setSource(uint8_t source); //all sources may not be supported by some modules
+void playTrack(uint16_t track);
+void next();
+void previous();
+void pause();
+void resume();
+void stop();
+
+void playFolder(uint8_t folder, uint8_t track);
+void playMP3Folder(uint16_t track);
+void play3000Folder(uint16_t track); //may not be supported by some modules
+void playAdvertFolder(uint16_t track);
+void stopAdvertFolder();
+
+void setVolume(uint8_t volume);
+void volumeUp();
+void volumeDown();
+void enableDAC(bool enable);
+void setDACGain(uint8_t gain, bool enable = true);
+void setEQ(uint8_t preset); //may not be supported by some modules
+
+void repeatTrack(uint16_t track);
+void repeatCurrentTrack(bool enable);
+void repeatAll(bool enable);
+void repeatFolder(uint16_t folder);
+void randomAll();
+
+void sleep();
+void wakeup(uint8_t source = 2);
+void enableStandby(bool enable, uint8_t source = 2);
+void reset();
+
+uint8_t  getStatus();
+uint8_t  getVolume();
+uint8_t  getEQ();
+uint8_t  getPlayMode(); //may not be supported by some modules
+uint8_t  getVersion();
+uint16_t getTotalTracksSD();
+uint16_t getTotalTracksUSB();
+uint16_t getTotalTracksNORFlash(); //may not be supported by some modules
+uint16_t getTrackSD();
+uint16_t getTrackUSB();
+uint16_t getTrackNORFlash(); //may not be supported by some modules
+uint8_t  getTotalTracksFolder(uint8_t folder);
+uint8_t  getTotalFolders(); //may not be supported by some modules
+uint8_t  getCommandStatus();
+```
 
 Supports:
 - Arduino AVR
