@@ -25,6 +25,7 @@ stop	KEYWORD2
 
 playFolder	KEYWORD2
 playMP3Folder	KEYWORD2
+play3000Folder	KEYWORD2
 playAdvertFolder	KEYWORD2
 stopAdvertFolder	KEYWORD2
 
@@ -59,6 +60,7 @@ getTrackSD	KEYWORD2
 getTrackUSB	KEYWORD2
 getTrackNORFlash	KEYWORD2
 getTotalTracksFolder	KEYWORD2
+getTotalFolders	KEYWORD2
 getCommandStatus	KEYWORD2
 
 #######################################
