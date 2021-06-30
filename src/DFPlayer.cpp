@@ -11,7 +11,7 @@
    - 24-bit DAC
    - 90dB output dynamic range
    - SNR over 85dB
-   - micro SD card up to 32GB (FAT16, FAT32)
+   - micro SD card, up to 32GB (FAT16, FAT32)
    - USB-Disk up to 32GB (FAT16, FAT32)
    - supports up to 100 folders, each folder can be assigned to 001..255 songs
    - built-in 3W mono amplifier, MD8002 AB-Class
@@ -50,6 +50,7 @@
     - wait for player to boot, 1.5sec..3sec depends on SD card size
     - timeout for responses to requests 100msec..200msec
     - 0x01=module return response, 0x00=module not return response
+    - DAC is turned on by default after boot or reset
     - average consumption 24mA
 */
 /**************************************************************************/
@@ -103,9 +104,11 @@ void DFPlayer::setResponse(bool enable)
     Set playback source
 
     NOTE:
-    - source will be selected automatically if only one is present
-    - this command interrupt playback
-    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep
+    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep (3..6 may
+      not be supported by some modules!!!)
+    - module automatically detect if source is on-line
+    - module automatically enter standby after setting source
+    - this command interrupt playback!!!
     - wait 200ms to select source
 */
 /**************************************************************************/
@@ -128,7 +131,7 @@ void DFPlayer::setSource(uint8_t source)
 
     NOTE:
     - files in the root must start with 4 decimal digits with leading zeros
-    - example: SD_ROOT/0001 - My favorite song.mp3
+      - example: SD_ROOT/0001 - My favorite song.mp3
     - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
       played firts
 */
@@ -150,7 +153,7 @@ void DFPlayer::playTrack(uint16_t track)
 
     NOTE:
     - files in the root must start with 4 decimal digits with leading zeros
-    - example: SD_ROOT/0001 - My favorite song.mp3
+      - example: SD_ROOT/0001 - My favorite song.mp3
     - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
       played firts
 */
@@ -169,7 +172,7 @@ void DFPlayer::next()
 
     NOTE:
     - files in the root must start with 4 decimal digits with leading zeros
-    - example: SD_ROOT/0001 - My favorite song.mp3
+      - example: SD_ROOT/0001 - My favorite song.mp3
     - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
       played firts
 */
@@ -231,9 +234,9 @@ void DFPlayer::stop()
 
     NOTE:
     - folder name must be 01..99
+    - up to 001..255 songs in each folder
     - files in folder must start with 3 decimal digits with leading zeros
-    - up to 001..255 songs in the folder
-    - example: SD_ROOT/01/001 - My favorite song.mp3
+      - example: SD_ROOT/01/001 - My favorite song.mp3
 */
 /**************************************************************************/
 void DFPlayer::playFolder(uint8_t folder, uint8_t track)
@@ -255,9 +258,11 @@ void DFPlayer::playFolder(uint8_t folder, uint8_t track)
 
     NOTE:
     - folder name must be "mp3" or "MP3"
+    - up to 0001..9999 songs in each folder
     - files in folder must start with 4 decimal digits with leading zeros
-    - up to 0001..9999 songs in the folder
-    - example: SD_ROOT/mp3/0001 - My favorite song.mp3
+      - example: SD_ROOT/mp3/0001 - My favorite song.mp3
+    - module speed will decrease as the folder gets bigger, place no more
+      than 3000 tracks to keep the speed
 */
 /**************************************************************************/
 void DFPlayer::playMP3Folder(uint16_t track)
@@ -271,6 +276,30 @@ void DFPlayer::playMP3Folder(uint16_t track)
 
 /**************************************************************************/
 /*
+    play3000Folder()
+
+    Play specific track number from folder, if you need more than 256
+    tracks in a folder
+
+    NOTE:
+    - folder name must be 01..15
+    - up to 0001..3000 songs in each folder
+    - may not be supported by some modules!!!
+    - files in folder must start with 4 decimal digits with leading zeros
+      - example: SD_ROOT/01/0001 - My favorite song.mp3
+*/
+/**************************************************************************/
+void DFPlayer::play3000Folder(uint16_t track)
+{
+  if      (track == 0)   track = 1;
+  else if (track > 3000) track = 3000;
+
+  _sendData(DFPLAYER_PLAY_3000_FOLDER, track >> 8, track);
+}
+
+
+/**************************************************************************/
+/*
     playAdvertFolder()
 
     Interrupt current track & play specific track number from "advert"
@@ -278,9 +307,10 @@ void DFPlayer::playMP3Folder(uint16_t track)
 
     NOTE:
     - folder name must be "advert" or "ADVERT"
+    - up to 0001..9999 songs in each folder
+    - command does't work when module is paused or stopped
     - files in folder must start with 4 decimal digits with leading zeros
-    - up to 0001..9999 songs in the folder
-    - example: SD_ROOT/advert/0001 - My favorite song.mp3
+      - example: SD_ROOT/advert/0001 - My favorite song.mp3
 */
 /**************************************************************************/
 void DFPlayer::playAdvertFolder(uint16_t track)
@@ -296,7 +326,7 @@ void DFPlayer::playAdvertFolder(uint16_t track)
 /*
     stopAdvertFolder()
 
-    Stop interrupting current track to play track from "advert" folder
+    Stop interrupting current track while playing track from "advert" folder
 
     NOTE:
     - see playAdvertFolder() for details
@@ -357,12 +387,13 @@ void DFPlayer::volumeDown()
     Enable/disable DAC
 
     NOTE:
-    - 1=enable, 0=disable
+    - 1=enable, 0=disable/high resistance
+    - DAC is turned on by default after boot or reset
 */
 /**************************************************************************/
 void DFPlayer::enableDAC(bool enable)
 {
-  _sendData(DFPLAYER_SET_DAC, 0, !enable); //0=enable, 1=disable
+  _sendData(DFPLAYER_SET_DAC, 0, !enable); //0=enable, 1=disable/high resistance
 }
 
 
@@ -393,6 +424,7 @@ void DFPlayer::setDACGain(uint8_t gain, bool enable)
 
     NOTE:
     - 0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass
+    - may not be supported by some modules!!!
 */
 /************************************************************************************/
 void DFPlayer::setEQ(uint8_t preset)
@@ -408,6 +440,7 @@ void DFPlayer::setEQ(uint8_t preset)
     Playing & looping track number in chronological order
 
     NOTE:
+    - command does't work when module is paused or stopped
     - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
       played firts
 */
@@ -428,8 +461,9 @@ void DFPlayer::repeatTrack(uint16_t track)
     Loop currently played track
 
     NOTE:
-    - any playback command will switch back to normal playback mode
     - 0=stop repeating, 1=repeat currently played file
+    - command does't work when module is paused or stopped
+    - any playback command will switch back to normal playback mode
 */
 /**************************************************************************/
 void DFPlayer::repeatCurrentTrack(bool enable)
@@ -442,20 +476,22 @@ void DFPlayer::repeatCurrentTrack(bool enable)
 /*
     repeatAll()
 
-    Repeat playback all files in chronological order
+    Repeat playback all files in chronological order until it receives
+    stop or pause command
 
     NOTE:
+    - 0x00=stop repeat playback & 0x01=start repeat playback
+    - command does't work when module is paused or stopped
     - any playback command will switch back to normal playback mode
-    - LD-byte values 0x01=stop repeat playback & 0x00=start repeat playback ???
     - files in the root must start with 4 decimal digits with leading zeros
-    - example:  SD_ROOT/0001 - My favorite song.mp3
+      - example: SD_ROOT/0001 - My favorite song.mp3
     - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
       played firts
 */
 /**************************************************************************/
 void DFPlayer::repeatAll(bool enable)
 {
-  _sendData(DFPLAYER_REPEAT_ALL, 0, enable);
+  _sendData(DFPLAYER_REPEAT_ALL, 0, enable); //0x00=stop repeat playback & 0x01=start repeat playback
 }
 
 
@@ -463,12 +499,13 @@ void DFPlayer::repeatAll(bool enable)
 /*
     repeatFolder()
 
-    Repeat playback all tracks in chronological order
+    Repeat playback all tracks in chronological order until stop command
 
     NOTE:
+    - up to 01..99 folder
+    - command does't work when module is paused or stopped
     - any playback command will switch back to normal playback mode
     - folder must start with 2 decimal digits with leading zeros
-    - up to 01..99 folder
 */
 /**************************************************************************/
 void DFPlayer::repeatFolder(uint16_t folder)
@@ -504,7 +541,7 @@ void DFPlayer::randomAll()
 
     NOTE:
     - use wakeup() to exit sleep
-    - module does not respond to any playback commands in sleep mode, other
+    - module does't respond to any playback commands in sleep mode, other
       commands OK
     - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep
     - looks like does nothing, before & after 24mA
@@ -524,7 +561,8 @@ void DFPlayer::sleep()
 
     NOTE:
     - source will be selected automatically if only one is present
-    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep
+    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep (3..6 may
+      not be supported by some modules!!!)
 */
 /**************************************************************************/
 void DFPlayer::wakeup(uint8_t source)
@@ -541,9 +579,9 @@ void DFPlayer::wakeup(uint8_t source)
 
     NOTE:
     - true=enable standby, false=normal mode
-    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=Sleep, 5=NOR Flash
+    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep
     - use wakeup() to exit standby
-    - module does not respond to any playback commands in standby mode,
+    - module does't respond to any playback commands in standby mode,
       other commands OK
     - standby not the same as sleep mode
     - looks like does nothing, before & after 24mA
@@ -553,7 +591,7 @@ void DFPlayer::enableStandby(bool enable, uint8_t source)
 {
   if (enable == true)
   {
-    _sendData(DFPLAYER_SET_STANDBY_MODE, 0, 0); //DFPLAYER_SET_NORMAL_MODE - DOES NOT WORK!!!
+    _sendData(DFPLAYER_SET_STANDBY_MODE, 0, 0); //DFPLAYER_SET_NORMAL_MODE reserved & doesn't work here
   }
   else
   {
@@ -587,7 +625,7 @@ void DFPlayer::reset()
     Get current module status
 
     NOTE:
-    - this command does not interrupt current playback
+    - this command does't interrupt current playback
     - status list:
       - 0, stop 
       - 1, playing
@@ -598,11 +636,11 @@ void DFPlayer::reset()
 
     - module response:
     - 7E FF 06 42 00 yy xx zz zz EF
-      - yy=02 normal mode or TF??
+      - yy=01 USB, yy=02 TF
         - xx=00 stop
         - xx=01 playing
         - xx=02 pause
-      -yy=00
+      - yy=00
         - xx=02 standby/sleep
 */
 /**************************************************************************/
@@ -641,7 +679,7 @@ uint8_t DFPlayer::getStatus()
 
     NOTE:
     - volume range 0..30
-    - this command does not interrupt current playback
+    - this command does't interrupt current playback
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -661,7 +699,8 @@ uint8_t DFPlayer::getVolume()
 
     NOTE:
     - 0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass
-    - this command does not interrupt current playback
+    - this command does't interrupt current playback
+    - may not be supported by some modules!!!
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -681,7 +720,8 @@ uint8_t DFPlayer::getEQ()
 
     NOTE:
     - 0=loop all, 1=loop folder, 2=loop track, 3=random, 4=disable
-    - this command does not interrupt current playback
+    - this command does't interrupt current playback
+    - may not be supported by some modules!!!
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -701,7 +741,7 @@ uint8_t DFPlayer::getPlayMode()
 
     NOTE:
     - my module return 0x08
-    - this command does not interrupt current playback
+    - this command does't interrupt current playback
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -721,8 +761,8 @@ uint8_t DFPlayer::getVersion()
 
     NOTE:
     - return number even if SD card is removed
+    - this command interrupt current playback!!!
     - return "0" on communication error
-    - this command interrupt current playback
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTotalTracksSD()
@@ -740,8 +780,8 @@ uint16_t DFPlayer::getTotalTracksSD()
     Get total number of tracks on USB-Disk
 
     NOTE:
+    - this command interrupt current playback!!!
     - return "0" on communication error
-    - this command interrupt current playback
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTotalTracksUSB()
@@ -756,11 +796,12 @@ uint16_t DFPlayer::getTotalTracksUSB()
 /*
     getTotalTracksNORFlash()
 
-    Get total number of tracks on NOR Flash
+    Get total number of tracks on NOR-Flash
 
     NOTE:
+    - this command interrupt current playback!!!
+    - may not be supported by some modules!!!
     - return "0" on communication error
-    - this command interrupt current playback
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTotalTracksNORFlash()
@@ -775,15 +816,12 @@ uint16_t DFPlayer::getTotalTracksNORFlash()
 /*
     getTrackSD()
 
-    Get currently playing track number on TF-Card, sorted in chronological
-    order
+    Get currently playing track number on TF-Card
 
     NOTE:
     - return track number while track is playing
+    - this command does't interrupt current playback
     - return "0" on communication error
-    - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
-      played firts
-    
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTrackSD()
@@ -798,14 +836,12 @@ uint16_t DFPlayer::getTrackSD()
 /*
     getTrackUSB()
 
-    Get currently playing track number on USB-Disk, sorted in chronological
-    order
+    Get currently playing track number on USB-Disk
 
     NOTE:
     - return track number while track is playing
+    - this command does't interrupt current playback
     - return "0" on communication error
-    - don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be
-      played firts
 */
 /**************************************************************************/
 uint16_t DFPlayer::getTrackUSB()
@@ -818,12 +854,12 @@ uint16_t DFPlayer::getTrackUSB()
 
 /**************************************************************************/
 /*
-    getTrackUSB()
+    getTrackNORFlash()
 
-    Get currently playing track number on NOR-Flash, sorted in chronological
-    order
+    Get currently playing track number on NOR-Flash
 
     NOTE:
+    - may not be supported by some modules!!!
     - return "0" on communication error
 */
 /**************************************************************************/
@@ -842,8 +878,8 @@ uint16_t DFPlayer::getTrackNORFlash()
     Get total number of tracks in folder
 
     NOTE:
+    - this command interrupt current playback!!!
     - return "0" on communication error
-    - this command interrupt current playback
 */
 /**************************************************************************/
 uint8_t DFPlayer::getTotalTracksFolder(uint8_t folder)
@@ -851,6 +887,30 @@ uint8_t DFPlayer::getTotalTracksFolder(uint8_t folder)
   _sendData(DFPLAYER_GET_QNT_FOLDER_FILES, 0, folder);
 
   return _getResponse(DFPLAYER_GET_QNT_FOLDER_FILES);
+}
+
+
+/**************************************************************************/
+/*
+    getTotalFolders()
+
+    Get total number of root folders in current source
+
+    NOTE:
+    - only work with USB-Disk & TF-card!!!
+    - this command interrupt current playback!!!
+    - may not be supported by some modules!!!
+    - return "0" on communication error
+
+    - my module doesn't support, 1-st time return 0x04 & 2-nd time 0x07
+      than stop play
+*/
+/**************************************************************************/
+uint8_t DFPlayer::getTotalFolders()
+{
+  _sendData(DFPLAYER_GET_QNT_FOLDERS, 0, 0);
+
+  return _getResponse(DFPLAYER_GET_QNT_FOLDERS);
 }
 
 
