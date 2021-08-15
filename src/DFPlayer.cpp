@@ -944,7 +944,7 @@ uint8_t DFPlayer::getCommandStatus()
   if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_OK)    {return 0x0B;}
   if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_DONE)  {return 0x0C;}
   if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_READY) {return 0x0D;}
-                                                    {return 0x00;}
+                                                     return 0x00;
 }
 
 
@@ -1017,7 +1017,7 @@ uint8_t DFPlayer::_readData()
   if (_dataBuffer[2] != DFPLAYER_UART_DATA_LEN)   {return 3;}                   //length byte missing
   if (_dataBuffer[9] != DFPLAYER_UART_END_BYTE)   {return 4;}                   //end byte missing
 
-                                                  {return 5;}                   //OK, no errors!!!
+                                                   return 5;                    //OK, no errors!!!
 }
 
 
@@ -1034,5 +1034,5 @@ uint8_t DFPlayer::_readData()
 uint16_t DFPlayer::_getResponse(uint8_t command)
 {
   if ((_readData() == 5) && (_dataBuffer[3] == command)) {return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6];}
-                                                         {return 0;}
+                                                          return 0;
 }
