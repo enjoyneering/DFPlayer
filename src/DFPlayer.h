@@ -155,9 +155,10 @@ class DFPlayer
    uint8_t  getCommandStatus();
 
   private:
-   Stream* _serial;
-   uint8_t _dataBuffer[DFPLAYER_UART_FRAME_SIZE];
-   bool    _ack;
+   Stream*  _serial;
+   uint16_t _threshold;                            //timeout responses, in msec
+   uint8_t  _dataBuffer[DFPLAYER_UART_FRAME_SIZE]; //shared buffer between tx & rx
+   bool     _ack;
 
    uint16_t _getResponse(uint8_t command);
    void     _sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB);
