@@ -56,12 +56,11 @@
 /**************************************************************************/
 void DFPlayer::begin(Stream &stream, uint16_t threshold, bool response, bool bootDelay)
 {
-  _serial = &stream;                  //serial stream
-  _ack    = response;                 //0x01=module return response, 0x00=module not return response
+  _serial    = &stream;   //serial stream
+  _threshold = threshold; //timeout responses, in msec
+  _ack       = response;  //0x01=module return response, 0x00=module not return response
 
-  _serial->setTimeout(threshold);     //set maximum msec to wait for Serial.readBytes()
-
-  if (bootDelay == true) delay(3000);
+  if (bootDelay == true) {delay(3000);}
 }
 
 
@@ -69,15 +68,15 @@ void DFPlayer::begin(Stream &stream, uint16_t threshold, bool response, bool boo
 /*
     setTimeout()
 
-    Set timeout value for request responses, in msec
+    Set timeout responses, in msec
 
     NOTE:
-    - timeout for responses to requests 100msec..200msec
+    - average timeout responses 100msec..200msec
 */
 /**************************************************************************/
 void DFPlayer::setTimeout(uint16_t threshold)
 {
-  _serial->setTimeout(threshold); //set maximum msec to wait for Serial.readBytes()
+  _threshold = threshold; //timeout responses, in msec
 }
 
 
@@ -114,12 +113,12 @@ void DFPlayer::setResponse(bool enable)
 /**************************************************************************/
 void DFPlayer::setSource(uint8_t source)
 {
-  if      (source == 0) source = 1;
-  else if (source >  6) source = 6;
+  if      (source == 0) {source = 1;}
+  else if (source >  6) {source = 6;}
 
   _sendData(DFPLAYER_SET_PLAY_SRC, 0, source);
 
-  if (source != 6) delay(200); //6=Sleep
+  if (source != 6) {delay(200);} //6=Sleep
 }
 
 
@@ -138,8 +137,8 @@ void DFPlayer::setSource(uint8_t source)
 /**************************************************************************/
 void DFPlayer::playTrack(uint16_t track)
 {
-  if      (track == 0)   track = 1;
-  else if (track > 9999) track = 9999;
+  if      (track == 0)   {track = 1;}
+  else if (track > 9999) {track = 9999;}
 
   _sendData(DFPLAYER_PLAY_TRACK, track >> 8, track);
 }
@@ -241,10 +240,10 @@ void DFPlayer::stop()
 /**************************************************************************/
 void DFPlayer::playFolder(uint8_t folder, uint8_t track)
 {
-  if      (folder == 0) folder = 1;
-  else if (folder > 99) folder = 99;
+  if      (folder == 0) {folder = 1;}
+  else if (folder > 99) {folder = 99;}
 
-  if (track == 0) track = 1; //upper limit uint8_t=255
+  if (track == 0) {track = 1;} //upper limit uint8_t=255
 
   _sendData(DFPLAYER_PLAY_FOLDER, folder, track);
 }
@@ -267,8 +266,8 @@ void DFPlayer::playFolder(uint8_t folder, uint8_t track)
 /**************************************************************************/
 void DFPlayer::playMP3Folder(uint16_t track)
 {
-  if      (track == 0)   track = 1;
-  else if (track > 9999) track = 9999;
+  if      (track == 0)   {track = 1;}
+  else if (track > 9999) {track = 9999;}
 
   _sendData(DFPLAYER_PLAY_MP3_FOLDER, track >> 8, track);
 }
@@ -291,8 +290,8 @@ void DFPlayer::playMP3Folder(uint16_t track)
 /**************************************************************************/
 void DFPlayer::play3000Folder(uint16_t track)
 {
-  if      (track == 0)   track = 1;
-  else if (track > 3000) track = 3000;
+  if      (track == 0)   {track = 1;}
+  else if (track > 3000) {track = 3000;}
 
   _sendData(DFPLAYER_PLAY_3000_FOLDER, track >> 8, track);
 }
@@ -315,8 +314,8 @@ void DFPlayer::play3000Folder(uint16_t track)
 /**************************************************************************/
 void DFPlayer::playAdvertFolder(uint16_t track)
 {
-  if      (track == 0)   track = 1;
-  else if (track > 9999) track = 9999;
+  if      (track == 0)   {track = 1;}
+  else if (track > 9999) {track = 9999;}
 
   _sendData(DFPLAYER_PLAY_ADVERT_FOLDER, track >> 8, track);
 }
@@ -350,7 +349,7 @@ void DFPlayer::stopAdvertFolder()
 /************************************************************************************/
 void DFPlayer::setVolume(uint8_t volume)
 {
-  if (volume <= 30) _sendData(DFPLAYER_SET_VOL, 0, volume);
+  if (volume <= 30) {_sendData(DFPLAYER_SET_VOL, 0, volume);}
 }
 
 
@@ -410,7 +409,7 @@ void DFPlayer::enableDAC(bool enable)
 /**************************************************************************/
 void DFPlayer::setDACGain(uint8_t gain, bool enable)
 {
-  if (gain > 31) gain = 31;
+  if (gain > 31) {gain = 31;}
 
   _sendData(DFPLAYER_SET_DAC_GAIN, enable, gain);
 }
@@ -429,7 +428,7 @@ void DFPlayer::setDACGain(uint8_t gain, bool enable)
 /************************************************************************************/
 void DFPlayer::setEQ(uint8_t preset)
 {
-  if (preset <= 5) _sendData(DFPLAYER_SET_EQ, 0, preset);
+  if (preset <= 5) {_sendData(DFPLAYER_SET_EQ, 0, preset);}
 }
 
 
@@ -447,8 +446,8 @@ void DFPlayer::setEQ(uint8_t preset)
  /**************************************************************************/
 void DFPlayer::repeatTrack(uint16_t track)
 {
-  if      (track == 0)   track = 1;
-  else if (track > 9999) track = 9999;
+  if      (track == 0)   {track = 1;}
+  else if (track > 9999) {track = 9999;}
 
   _sendData(DFPLAYER_LOOP_TRACK, track >> 8, track);
 }
@@ -510,8 +509,8 @@ void DFPlayer::repeatAll(bool enable)
 /**************************************************************************/
 void DFPlayer::repeatFolder(uint16_t folder)
 {
-  if      (folder == 0)  folder = 1;
-  else if (folder >  99) folder = 99;
+  if      (folder == 0)  {folder = 1;}
+  else if (folder >  99) {folder = 99;}
 
   _sendData(DFPLAYER_REPEAT_FOLDER, 0, folder);
 }
@@ -567,7 +566,7 @@ void DFPlayer::sleep()
 /**************************************************************************/
 void DFPlayer::wakeup(uint8_t source)
 {
-  if (source != 6) setSource(source); //6=Sleep prohibited
+  if (source != 6) {setSource(source);} //6=Sleep prohibited
 }
 
 
@@ -940,12 +939,12 @@ uint8_t DFPlayer::getTotalFolders()
 /**************************************************************************/
 uint8_t DFPlayer::getCommandStatus()
 {
-  if (_dataBuffer[3] == DFPLAYER_RETURN_ERROR)      return _dataBuffer[6]; //see NOTE
+  if (_dataBuffer[3] == DFPLAYER_RETURN_ERROR)      {return _dataBuffer[6];} //see NOTE
 
-  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_OK)    return 0x0B;
-  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_DONE)  return 0x0C;
-  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_READY) return 0x0D;
-                                                    return 0x00;
+  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_OK)    {return 0x0B;}
+  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_DONE)  {return 0x0C;}
+  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_READY) {return 0x0D;}
+                                                    {return 0x00;}
 }
 
 
@@ -1003,20 +1002,22 @@ void DFPlayer::_sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB)
  /**************************************************************************/
 uint8_t DFPlayer::_readData()
 {
+  memset(_dataBuffer, 0x00, DFPLAYER_UART_FRAME_SIZE);                          //clear data buffer
+
   _serial->flush();                                                             //clear serial FIFO
 
-  memset(_dataBuffer, 0x00, DFPLAYER_UART_FRAME_SIZE);                          //clear data buffer
+  _serial->setTimeout(_threshold);                                              //set maximum msec to wait for Serial.readBytes()
 
   uint8_t dataSize = _serial->readBytes(_dataBuffer, DFPLAYER_UART_FRAME_SIZE); //read serial, wait for data during setTimeout() period
 
-  if (dataSize < DFPLAYER_UART_FRAME_SIZE)        return 0;                     //request not fully received
+  if (dataSize < DFPLAYER_UART_FRAME_SIZE)        {return 0;}                   //short answer (received less than expected)
 
-  if (_dataBuffer[0] != DFPLAYER_UART_START_BYTE) return 1;                     //start byte missing
-  if (_dataBuffer[1] != DFPLAYER_UART_VERSION)    return 2;                     //version byte missing
-  if (_dataBuffer[2] != DFPLAYER_UART_DATA_LEN)   return 3;                     //length byte missing
-  if (_dataBuffer[9] != DFPLAYER_UART_END_BYTE)   return 4;                     //end byte missing
+  if (_dataBuffer[0] != DFPLAYER_UART_START_BYTE) {return 1;}                   //start byte missing
+  if (_dataBuffer[1] != DFPLAYER_UART_VERSION)    {return 2;}                   //version byte missing
+  if (_dataBuffer[2] != DFPLAYER_UART_DATA_LEN)   {return 3;}                   //length byte missing
+  if (_dataBuffer[9] != DFPLAYER_UART_END_BYTE)   {return 4;}                   //end byte missing
 
-                                                  return 5;                     //OK, no errors!!!
+                                                  {return 5;}                   //OK, no errors!!!
 }
 
 
@@ -1032,6 +1033,6 @@ uint8_t DFPlayer::_readData()
  /**************************************************************************/
 uint16_t DFPlayer::_getResponse(uint8_t command)
 {
-  if (_readData() == 5 && _dataBuffer[3] == command) return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6]; 
-                                                     return 0;
+  if ((_readData() == 5) && (_dataBuffer[3] == command)) {return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6];}
+                                                         {return 0;}
 }
