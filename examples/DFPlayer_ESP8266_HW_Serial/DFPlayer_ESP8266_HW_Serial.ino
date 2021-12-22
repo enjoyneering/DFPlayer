@@ -53,8 +53,7 @@ uint8_t response = 0;
       - DFPLAYER_MINI: DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300,
         JL AA20HF)
       - DFPLAYER_FN_X10P: FN-M10P, FN-S10P (FN6100)
-      - DFPLAYER_HW_247A: DFPlayer Mini HW-247A, MP3-TF-16P V3.0
-        (GD3200B, MH2024K)
+      - DFPLAYER_HW_247A: DFPlayer Mini HW-247A (GD3200B)
       - DFPLAYER_NO_CHECKSUM: no checksum calculation (not recomended for
         MCU without external crystal oscillator)
 */
