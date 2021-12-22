@@ -54,13 +54,40 @@
     - average consumption 24mA
 */
 /**************************************************************************/
-void DFPlayer::begin(Stream &stream, uint16_t threshold, bool response, bool bootDelay)
+void DFPlayer::begin(Stream &stream, uint16_t threshold, DFPLAYER_MODULE_TYPE moduleType, bool response, bool bootDelay)
 {
-  _serial    = &stream;   //serial stream
-  _threshold = threshold; //timeout responses, in msec
-  _ack       = response;  //0x01=module return response, 0x00=module not return response
+  _serial     = &stream;    //serial stream
+  _threshold  = threshold;  //timeout responses, in msec
+  _ack        = response;   //0x01=module return response after the command, 0x00=module not return response after the command
+  _moduleType = moduleType; //DFPlayer or Clone, differ in how checksum is calculated
 
   if (bootDelay == true) {delay(3000);}
+}
+
+
+/**************************************************************************/
+/*
+    setModel()
+
+    Set module type, DFPlayer or Clone
+
+    NOTE:
+    - moduleType:
+      - DFPLAYER_MINI: DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300,
+        JL AA20HF)
+      - DFPLAYER_FN_X10P: FN-M10P, FN-S10P (FN6100)
+      - DFPLAYER_HW_247A: DFPlayer Mini HW-247A, MP3-TF-16P V3.0
+        (GD3200B, MH2024K)
+      - DFPLAYER_NO_CHECKSUM: no checksum calculation (not recomended for
+        MCU without external crystal oscillator)
+
+    - DFPlayer clones have more or less the same commands, the difference
+      is in the checksum calculation
+*/
+/**************************************************************************/
+void DFPlayer::setModel(DFPLAYER_MODULE_TYPE moduleType)
+{
+  _moduleType = moduleType;
 }
 
 
@@ -965,8 +992,6 @@ uint8_t DFPlayer::getCommandStatus()
  /**************************************************************************/
 void DFPlayer::_sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB)
 {
-  int16_t checksum = 0; //zero, DON'T TOUCH!!!
-
   _dataBuffer[0] = DFPLAYER_UART_START_BYTE;
   _dataBuffer[1] = DFPLAYER_UART_VERSION;
   _dataBuffer[2] = DFPLAYER_UART_DATA_LEN;
@@ -975,14 +1000,45 @@ void DFPlayer::_sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB)
   _dataBuffer[5] = dataMSB;
   _dataBuffer[6] = dataLSB;
 
-  checksum = checksum - _dataBuffer[1] - _dataBuffer[2] - _dataBuffer[3] - _dataBuffer[4] - _dataBuffer[5] - _dataBuffer[6];
+  int32_t checksum;
 
-  _dataBuffer[7] = checksum >> 8;
-  _dataBuffer[8] = checksum; 
+  switch (_moduleType)
+  {
+    case DFPLAYER_MINI:
+      checksum = 0;        //0x0000, DON'T TOUCH!!!
+      checksum = checksum - _dataBuffer[1] - _dataBuffer[2] - _dataBuffer[3] - _dataBuffer[4] - _dataBuffer[5] - _dataBuffer[6];
+      break;
 
-  _dataBuffer[9] = DFPLAYER_UART_END_BYTE;
+    case DFPLAYER_FN_X10P:
+      checksum = 35535;    //0xFFFF, DON'T TOUCH!!!
+      checksum = checksum - _dataBuffer[1] - _dataBuffer[2] - _dataBuffer[3] - _dataBuffer[4] - _dataBuffer[5] - _dataBuffer[6] + 1;
+      break;
 
-  _serial->write(_dataBuffer, DFPLAYER_UART_FRAME_SIZE);
+    case DFPLAYER_HW_247A:
+    default:
+      //empty              //no checksum calculation, not recomended for MCU without external crystal oscillator
+      break;
+  }
+
+  switch (_moduleType)
+  {
+    case DFPLAYER_MINI:
+    case DFPLAYER_FN_X10P:
+      _dataBuffer[7] = checksum >> 8;
+      _dataBuffer[8] = checksum;
+
+      _dataBuffer[9] = DFPLAYER_UART_END_BYTE;
+
+      _serial->write(_dataBuffer, DFPLAYER_UART_FRAME_SIZE);
+      break;
+
+    case DFPLAYER_HW_247A:
+    default:
+      _dataBuffer[7] = DFPLAYER_UART_END_BYTE;
+
+      _serial->write(_dataBuffer, (DFPLAYER_UART_FRAME_SIZE - 2)); //-2=SUMH & SUML not used
+      break;
+  }
 }
 
 
