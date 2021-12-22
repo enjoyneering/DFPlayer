@@ -2,7 +2,7 @@
 
 # DFPlayer Mini
 This is small and fast Arduino library for:
- - DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300, JL AA20HF)
+ - DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300, JL AAxxxx)
  - FN-M10P, FN-M10P (FN6100)
  - DFPlayer Mini HW-247A (GD3200B)
 
