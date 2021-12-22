@@ -12,6 +12,7 @@
 
 begin	KEYWORD2
 
+setModel	KEYWORD2
 setTimeout	KEYWORD2
 setResponse	KEYWORD2
 
