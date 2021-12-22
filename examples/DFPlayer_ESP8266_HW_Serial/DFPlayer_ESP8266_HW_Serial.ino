@@ -42,59 +42,83 @@ DFPlayer mp3;                    //connect DFPlayer RX-pin to GPIO15(TX) & DFPla
 uint8_t response = 0;
 
 
+/**************************************************************************/
+/*
+    setup()
+
+    Main setup
+
+    NOTE:
+    - moduleType:
+      - DFPLAYER_MINI: DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300,
+        JL AA20HF)
+      - DFPLAYER_FN_X10P: FN-M10P, FN-S10P (FN6100)
+      - DFPLAYER_HW_247A: DFPlayer Mini HW-247A, MP3-TF-16P V3.0
+        (GD3200B, MH2024K)
+      - DFPLAYER_NO_CHECKSUM: no checksum calculation (not recomended for
+        MCU without external crystal oscillator)
+*/
+ /**************************************************************************/
 void setup()
 {
-  Serial.begin(MP3_SERIAL_SPEED, SERIAL_8N1);      //hardware serial on GPIO01(TX) & GPIO03(RX) after boot
+  Serial.begin(MP3_SERIAL_SPEED, SERIAL_8N1);                     //hardware serial on GPIO01(TX) & GPIO03(RX) after boot
 
+  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_MINI, false); //DFPLAYER_MINI see NOTE, false=no response from module after the command
 
-  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, false); //false=no response from module
+  Serial.swap();     //now hardware serial on GPIO15(TX) & GPIO13(RX)
+  Serial.flush();    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
 
-  Serial.swap();                                   //now hardware serial on GPIO15(TX) & GPIO13(RX)
-  Serial.flush();                                  //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
-
-  mp3.stop();                                      //if player was runing during ESP8266 reboot
-  mp3.reset();                                     //reset all setting to default
+  mp3.stop();        //if player was runing during ESP8266 reboot
+  mp3.reset();       //reset all setting to default
   
-  mp3.setSource(2);                                //1=USB-Disk, 2=TF-Card, 3=Aux, 4=Sleep, 5=NOR Flash
+  mp3.setSource(2);  //1=USB-Disk, 2=TF-Card, 3=Aux, 4=Sleep, 5=NOR Flash
   
-  mp3.setEQ(0);                                    //0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass
-  mp3.setVolume(25);                               //0..30, module persists volume on power failure
+  mp3.setEQ(0);      //0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass
+  mp3.setVolume(25); //0..30, module persists volume on power failure
 
-  mp3.sleep();                                     //inter standby mode, 24mA
+  mp3.sleep();       //inter standby mode, 24mA
 
-  Serial.swap();                                   //now hardware serial on GPIO01(TX) & GPIO03(RX)
-  Serial.flush();                                  //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
+  Serial.swap();     //now hardware serial on GPIO01(TX) & GPIO03(RX)
+  Serial.flush();    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
 }
 
+
+/**************************************************************************/
+/*
+    loop()
+
+    Main loop
+*/
+ /**************************************************************************/
 void loop()
 {
-  Serial.swap();                                   //now hardware serial on GPIO15(TX) & GPIO13(RX)
-  Serial.flush();                                  //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
+  Serial.swap();                     //now hardware serial on GPIO15(TX) & GPIO13(RX)
+  Serial.flush();                    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
 
-  mp3.wakeup(2);                                   //exit standby mode & initialize sourse 1=USB-Disk, 2=TF-Card, 3=Aux, 5=NOR Flash
+  mp3.wakeup(2);                     //exit standby mode & initialize sourse 1=USB-Disk, 2=TF-Card, 3=Aux, 5=NOR Flash
 
-  mp3.playTrack(1);                                //play track #1, don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be played firts
-//mp3.playMP3Folder(1);                            //1=track, folder name must be "mp3" or "MP3" & files in folder must start with 4 decimal digits with leading zeros
-//mp3.playFolder(1, 2);                            //1=folder/2=track, folder name must be 01..99 & files in folder must start with 3 decimal digits with leading zeros
+  mp3.playTrack(1);                  //play track #1, don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be played firts
+//mp3.playMP3Folder(1);              //1=track, folder name must be "mp3" or "MP3" & files in folder must start with 4 decimal digits with leading zeros
+//mp3.playFolder(1, 2);              //1=folder/2=track, folder name must be 01..99 & files in folder must start with 3 decimal digits with leading zeros
 
-  mp3.setResponse(true);                           //enable=request a response, to return not only errors, but also OK statuses
+  mp3.setResponse(true);             //enable=request a response, to return not only errors, but also OK statuses
 
-  response = mp3.getVolume();                      //0..30
+  response = mp3.getVolume();        //0..30
 
-  Serial.swap();                                   //now hardware serial on GPIO01(TX) & GPIO03(RX)
-  Serial.flush();                                  //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
+  Serial.swap();                     //now hardware serial on GPIO01(TX) & GPIO03(RX)
+  Serial.flush();                    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
 
-  Serial.println(response);                        //print volume to Arduino Serial Monitor
+  Serial.println(response);          //print volume to Arduino Serial Monitor
 
-  Serial.swap();                                   //now hardware serial on GPIO15(TX) & GPIO13(RX)
-  Serial.flush();                                  //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
+  Serial.swap();                     //now hardware serial on GPIO15(TX) & GPIO13(RX)
+  Serial.flush();                    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
 
-  response = mp3.getCommandStatus();               //1=Error, module busy|2=Error, module sleep|3=Error, request not fully received|4= Error, checksum not match
-                                                   //5=Error, requested folder/track out of range|6=Error, requested folder/track not found|7=Error, advert available while track is playing
-                                                   //8=Error, SD card not found|9=???|10=Error, module sleep|11=OK, command accepted|12=OK, playback completed|13=OK, module ready after reboot
+  response = mp3.getCommandStatus(); //1=Error, module busy|2=Error, module sleep|3=Error, request not fully received|4= Error, checksum not match
+                                     //5=Error, requested folder/track out of range|6=Error, requested folder/track not found|7=Error, advert available while track is playing
+                                     //8=Error, SD card not found|9=???|10=Error, module sleep|11=OK, command accepted|12=OK, playback completed|13=OK, module ready after reboot
 
-  Serial.swap();                                   //now hardware serial on GPIO01(TX) & GPIO03(RX)
-  Serial.flush();                                  //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
+  Serial.swap();                     //now hardware serial on GPIO01(TX) & GPIO03(RX)
+  Serial.flush();                    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
 
-  Serial.println(response);                        //print command status to Arduino Serial Monitor
+  Serial.println(response);          //print command status to Arduino Serial Monitor via USB-COM
 }
