@@ -99,11 +99,24 @@
 #define DFPLAYER_RETURN_CODE_DONE     0x3D //track playback is over
 #define DFPLAYER_RETURN_CODE_READY    0x3F //ready after boot or reset
 
+
+/* list of supported modules */
+typedef enum : uint8_t
+{
+  DFPLAYER_MINI        = 0x00, //DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300, JL AA20HF)
+  DFPLAYER_FN_X10P     = 0x01, //FN-M10P, FN-S10P (FN6100)
+  DFPLAYER_HW_247A     = 0x02, //DFPlayer Mini HW-247A, MP3-TF-16P V3.0 (GD3200B, MH2024K)
+  DFPLAYER_NO_CHECKSUM = 0x03  //no checksum calculation, not recomended for MCU without external crystal oscillator
+}
+DFPLAYER_MODULE_TYPE;
+
+
 class DFPlayer
 {
   public:
-   void begin(Stream& stream, uint16_t threshold = 100, bool response = false, bool bootDelay = true);
+   void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool response = false, bool bootDelay = true);
 
+   void setModel(DFPLAYER_MODULE_TYPE = DFPLAYER_MINI);
    void setTimeout(uint16_t threshold);
    void setResponse(bool enable);
 
@@ -155,10 +168,11 @@ class DFPlayer
    uint8_t  getCommandStatus();
 
   private:
-   Stream*  _serial;
-   uint16_t _threshold;                            //timeout responses, in msec
-   uint8_t  _dataBuffer[DFPLAYER_UART_FRAME_SIZE]; //shared buffer between tx & rx
-   bool     _ack;
+   Stream*              _serial;
+   uint16_t             _threshold;                            //timeout responses, in msec
+   uint8_t              _dataBuffer[DFPLAYER_UART_FRAME_SIZE]; //shared buffer between tx & rx
+   DFPLAYER_MODULE_TYPE _moduleType;                           //DFPlayer or Clone, differ in how checksum is calculated
+   bool                 _ack;                                  //true=request response from module after the command
 
    uint16_t _getResponse(uint8_t command);
    void     _sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB);
