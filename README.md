@@ -1,7 +1,10 @@
 [![license-badge][]][license] ![version] [![stars][]][stargazers] ![hit-count] [![github-issues][]][issues]
 
 # DFPlayer Mini
-This is small and fast Arduino library for DFPlayer Mini, FN-M16P & FN-M10P MP3 Player. Supports all modules features.
+This is small and fast Arduino library for:
+ - DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300, JL AA20HF)
+ - FN-M10P, FN-M10P (FN6100)
+ - DFPlayer Mini HW-247A, MP3-TF-16P V3.0 (GD3200B, MH2024K)
 
 ![alt text][dfplayer_mini_mod_image]
 
@@ -24,10 +27,11 @@ NOTE:
 - Folders must contain 2 digits with leading zeros. Number of folders 01..99. Files inside must contain 3 digits with leading zeros. The number of files in each folder is 001..255. For example: SD_ROOT/01/001 - My favorite song.mp3. Unlike the root, files from folders can be read by the file number.
 - Folder "mp3" and "advert". Files inside this folders must contain 4 digits with leading zeros. The number of files is 0001..9999 and can be read by file number. For example: SD_ROOT/mp3/ 0001 - My favorite song.mp3. Files from "advert" are played only if a track is already playing. Then the module pauses the current one, plays the file from "advert" and unpauses the main one.
 
-## Library APIs:
+## Library APIs supports all modules features:
 ```c++
-void begin(Stream& stream, uint16_t threshold = 100, bool response = false, bool bootDelay = true);
+void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool response = false, bool bootDelay = true);
 
+void setModel(DFPLAYER_MODULE_TYPE = DFPLAYER_MINI);
 void setTimeout(uint16_t threshold); //usually 100msec..200msec
 void setResponse(bool enable);
 
@@ -88,7 +92,7 @@ Supports:
 
 [license-badge]: https://img.shields.io/badge/License-GPLv3-blue.svg
 [license]:       https://choosealicense.com/licenses/gpl-3.0/
-[version]:       https://img.shields.io/badge/Version-1.1.1-green.svg
+[version]:       https://img.shields.io/badge/Version-2.0.0-green.svg
 [stars]:         https://img.shields.io/github/stars/enjoyneering/DFPlayer.svg
 [stargazers]:    https://github.com/enjoyneering/DFPlayer/stargazers
 [hit-count]:     https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fenjoyneering%2FDFPlayer%2Ftree%2Fmain&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false
