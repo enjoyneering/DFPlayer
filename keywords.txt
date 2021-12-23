@@ -73,3 +73,8 @@ DFPlayer	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+
+DFPLAYER_MINI	LITERAL1
+DFPLAYER_FN_X10P	LITERAL1
+DFPLAYER_HW_247A	LITERAL1
+DFPLAYER_NO_CHECKSUM	LITERAL1
