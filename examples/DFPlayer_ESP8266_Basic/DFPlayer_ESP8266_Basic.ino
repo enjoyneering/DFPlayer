@@ -56,7 +56,7 @@ DFPlayer       mp3;
     NOTE:
     - moduleType:
       - DFPLAYER_MINI: DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300,
-        JL AA20HF)
+        JL AAxxxx)
       - DFPLAYER_FN_X10P: FN-M10P, FN-S10P (FN6100)
       - DFPLAYER_HW_247A: DFPlayer Mini HW-247A (GD3200B)
       - DFPLAYER_NO_CHECKSUM: no checksum calculation (not recomended for
