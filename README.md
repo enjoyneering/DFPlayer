@@ -17,7 +17,7 @@ DFPlayer Mini features:
 - micro SD, card up to 32GB (FAT16, FAT32)
 - USB-Disk, up to 32GB (FAT16, FAT32)
 - supports up to 100 folders, each folder can be assigned to 001..255 songs
-- built-in 3W mono amplifier, MD8002 AB-Class
+- built-in 3W mono amplifier, NS8002 AB-Class with standby function
 - UART to communicate
 
 NOTE:
@@ -69,7 +69,7 @@ void reset();
 
 uint8_t  getStatus();
 uint8_t  getVolume();
-uint8_t  getEQ();
+uint8_t  getEQ(); //may not be supported by some modules
 uint8_t  getPlayMode(); //may not be supported by some modules
 uint8_t  getVersion();
 uint16_t getTotalTracksSD();
@@ -92,7 +92,7 @@ Supports:
 
 [license-badge]: https://img.shields.io/badge/License-GPLv3-blue.svg
 [license]:       https://choosealicense.com/licenses/gpl-3.0/
-[version]:       https://img.shields.io/badge/Version-2.0.0-green.svg
+[version]:       https://img.shields.io/badge/Version-2.1.0-green.svg
 [stars]:         https://img.shields.io/github/stars/enjoyneering/DFPlayer.svg
 [stargazers]:    https://github.com/enjoyneering/DFPlayer/stargazers
 [hit-count]:     https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fenjoyneering%2FDFPlayer%2Ftree%2Fmain&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false
