@@ -14,7 +14,7 @@
    - micro SD card, up to 32GB (FAT16, FAT32)
    - USB-Disk up to 32GB (FAT16, FAT32)
    - supports up to 100 folders, each folder can be assigned to 001..255 songs
-   - built-in 3W mono amplifier, MD8002 AB-Class
+   - built-in 3W mono amplifier, NS8002 AB-Class with standby function
    - UART to communicate
 
    NOTE:
@@ -93,11 +93,11 @@
 #define DFPLAYER_GET_QNT_FOLDER_FILES 0x4E //get total number of tracks in folder
 #define DFPLAYER_GET_QNT_FOLDERS      0x4F //get total number of folders in current source (may not be supported by some modules)
 
-/* module returned codes at the end of any playback operation or if any command error */
-#define DFPLAYER_RETURN_CODE_OK       0x41 //OK, return if command is accepted & ACK/feedback byte is set to 0x01
-#define DFPLAYER_RETURN_ERROR         0x40 //see NOTE
-#define DFPLAYER_RETURN_CODE_DONE     0x3D //track playback is over
-#define DFPLAYER_RETURN_CODE_READY    0x3F //ready after boot or reset
+/* module returned codes at the end of any playback operation or if any command error, located in 4-th RX byte */
+#define DFPLAYER_RETURN_CODE_OK_ACK   0x41 //OK, command is accepted (returned only if ACK/feedback byte is set to 0x01)
+#define DFPLAYER_RETURN_ERROR         0x40 //error, module return this status automatically if command is not accepted (details located in 7-th RX byte)
+#define DFPLAYER_RETURN_CODE_DONE     0x3D //track playback is is completed, module return this status automatically after the track has been played
+#define DFPLAYER_RETURN_CODE_READY    0x3F //ready after boot or reset, module return this status automatically after boot or reset
 
 
 /* list of supported modules */
@@ -176,7 +176,7 @@ class DFPlayer
 
    uint16_t _getResponse(uint8_t command);
    void     _sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB);
-   uint8_t  _readData();
+   bool     _readData();
 };
 
 #endif
