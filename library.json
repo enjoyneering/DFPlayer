@@ -1,7 +1,7 @@
 {
   "name":        "DFPlayer",
   "keywords":    "dfplayer, mini, yx5200, gd3200, mh2024k, m16p, mp3, serial, esp8266, avr, driver",
-  "description": "Arduino library to interface ESP8266 with the DFPlayer Mini MP3 module",
+  "description": "Arduino library for interacting with the DFPlayer Mini MP3 module",
   "authors":
   {
     "name":  "ejoyneering",
@@ -12,7 +12,7 @@
     "type": "git",
     "url":  "https://github.com/enjoyneering/DFPlayer.git"
   },
-  "version":    "2.0.0",
+  "version":    "2.1.0",
   "frameworks": "arduino",
   "platforms":  "*"
 }
