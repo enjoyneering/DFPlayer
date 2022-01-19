@@ -14,7 +14,7 @@
    - micro SD card, up to 32GB (FAT16, FAT32)
    - USB-Disk up to 32GB (FAT16, FAT32)
    - supports up to 100 folders, each folder can be assigned to 001..255 songs
-   - built-in 3W mono amplifier, MD8002 AB-Class
+   - built-in 3W mono amplifier, NS8002 AB-Class with standby function
    - UART to communicate
 
    NOTE:
@@ -74,7 +74,7 @@ void DFPlayer::begin(Stream &stream, uint16_t threshold, DFPLAYER_MODULE_TYPE mo
     NOTE:
     - moduleType:
       - DFPLAYER_MINI: DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300,
-        JL AAxxxx)
+        JL AAxxxx from Jieli)
       - DFPLAYER_FN_X10P: FN-M10P, FN-S10P (FN6100)
       - DFPLAYER_HW_247A: DFPlayer Mini HW-247A (GD3200B)
       - DFPLAYER_NO_CHECKSUM: no checksum calculation (not recomended for
@@ -129,8 +129,15 @@ void DFPlayer::setResponse(bool enable)
     Set playback source
 
     NOTE:
-    - 1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep (3..6 may
-      not be supported by some modules!!!)
+    - source:
+      - 1=USB-Disc
+      - 2=TF-Card
+      - 3=Aux
+      - 4=NOR-Flash (for GD3200B)
+      - 5=NOR-Flash (for ???)
+      - 6=Sleep
+    - source 3..6 may not be supported by some modules!!!
+
     - module automatically detect if source is on-line
     - module automatically enter standby after setting source
     - this command interrupt playback!!!
@@ -139,8 +146,7 @@ void DFPlayer::setResponse(bool enable)
 /**************************************************************************/
 void DFPlayer::setSource(uint8_t source)
 {
-  if      (source == 0) {source = 1;}
-  else if (source >  6) {source = 6;}
+  source = constrain(source, 1, 6); //source limit 1..6
 
   _sendData(DFPLAYER_SET_PLAY_SRC, 0, source);
 
@@ -163,10 +169,9 @@ void DFPlayer::setSource(uint8_t source)
 /**************************************************************************/
 void DFPlayer::playTrack(uint16_t track)
 {
-  if      (track == 0)   {track = 1;}
-  else if (track > 9999) {track = 9999;}
+  track = constrain(track, 1, 9999); //track limit 1..9999
 
-  _sendData(DFPLAYER_PLAY_TRACK, track >> 8, track);
+  _sendData(DFPLAYER_PLAY_TRACK, (track >> 8), track);
 }
 
 
@@ -266,10 +271,8 @@ void DFPlayer::stop()
 /**************************************************************************/
 void DFPlayer::playFolder(uint8_t folder, uint8_t track)
 {
-  if      (folder == 0) {folder = 1;}
-  else if (folder > 99) {folder = 99;}
-
-  if (track == 0) {track = 1;} //upper limit uint8_t=255
+  folder = constrain(folder, 1, 99); //folder limit 1..99
+  track  = constrain(track, 1, 255); //track  limit 1..255
 
   _sendData(DFPLAYER_PLAY_FOLDER, folder, track);
 }
@@ -292,10 +295,9 @@ void DFPlayer::playFolder(uint8_t folder, uint8_t track)
 /**************************************************************************/
 void DFPlayer::playMP3Folder(uint16_t track)
 {
-  if      (track == 0)   {track = 1;}
-  else if (track > 9999) {track = 9999;}
+  track = constrain(track, 1, 9999); //track limit 1..9999
 
-  _sendData(DFPLAYER_PLAY_MP3_FOLDER, track >> 8, track);
+  _sendData(DFPLAYER_PLAY_MP3_FOLDER, (track >> 8), track);
 }
 
 
@@ -316,10 +318,9 @@ void DFPlayer::playMP3Folder(uint16_t track)
 /**************************************************************************/
 void DFPlayer::play3000Folder(uint16_t track)
 {
-  if      (track == 0)   {track = 1;}
-  else if (track > 3000) {track = 3000;}
+  track = constrain(track, 1, 3000); //track limit 1..3000
 
-  _sendData(DFPLAYER_PLAY_3000_FOLDER, track >> 8, track);
+  _sendData(DFPLAYER_PLAY_3000_FOLDER, (track >> 8), track);
 }
 
 
@@ -340,10 +341,9 @@ void DFPlayer::play3000Folder(uint16_t track)
 /**************************************************************************/
 void DFPlayer::playAdvertFolder(uint16_t track)
 {
-  if      (track == 0)   {track = 1;}
-  else if (track > 9999) {track = 9999;}
+  track = constrain(track, 1, 9999); //track limit 1..9999
 
-  _sendData(DFPLAYER_PLAY_ADVERT_FOLDER, track >> 8, track);
+  _sendData(DFPLAYER_PLAY_ADVERT_FOLDER, (track >> 8), track);
 }
 
 
@@ -375,7 +375,9 @@ void DFPlayer::stopAdvertFolder()
 /************************************************************************************/
 void DFPlayer::setVolume(uint8_t volume)
 {
-  if (volume <= 30) {_sendData(DFPLAYER_SET_VOL, 0, volume);}
+  volume = constrain(volume, 0, 30); //volume limit 0..30
+
+  _sendData(DFPLAYER_SET_VOL, 0, volume);
 }
 
 
@@ -435,7 +437,7 @@ void DFPlayer::enableDAC(bool enable)
 /**************************************************************************/
 void DFPlayer::setDACGain(uint8_t gain, bool enable)
 {
-  if (gain > 31) {gain = 31;}
+  gain = constrain(gain, 0, 31); //gain limit 0..31
 
   _sendData(DFPLAYER_SET_DAC_GAIN, enable, gain);
 }
@@ -454,7 +456,9 @@ void DFPlayer::setDACGain(uint8_t gain, bool enable)
 /************************************************************************************/
 void DFPlayer::setEQ(uint8_t preset)
 {
-  if (preset <= 5) {_sendData(DFPLAYER_SET_EQ, 0, preset);}
+  preset = constrain(preset, 0, 5); //preset limit 0..5
+
+  _sendData(DFPLAYER_SET_EQ, 0, preset);
 }
 
 
@@ -472,10 +476,9 @@ void DFPlayer::setEQ(uint8_t preset)
  /**************************************************************************/
 void DFPlayer::repeatTrack(uint16_t track)
 {
-  if      (track == 0)   {track = 1;}
-  else if (track > 9999) {track = 9999;}
+  track = constrain(track, 1, 9999); //track limit 1..9999
 
-  _sendData(DFPLAYER_LOOP_TRACK, track >> 8, track);
+  _sendData(DFPLAYER_LOOP_TRACK, (track >> 8), track);
 }
 
 
@@ -535,8 +538,7 @@ void DFPlayer::repeatAll(bool enable)
 /**************************************************************************/
 void DFPlayer::repeatFolder(uint16_t folder)
 {
-  if      (folder == 0)  {folder = 1;}
-  else if (folder >  99) {folder = 99;}
+  folder = constrain(folder, 1, 99); //folder limit 1..99
 
   _sendData(DFPLAYER_REPEAT_FOLDER, 0, folder);
 }
@@ -616,11 +618,11 @@ void DFPlayer::enableStandby(bool enable, uint8_t source)
 {
   if (enable == true)
   {
-    _sendData(DFPLAYER_SET_STANDBY_MODE, 0, 0); //DFPLAYER_SET_NORMAL_MODE reserved & doesn't work here
+    _sendData(DFPLAYER_SET_STANDBY_MODE, 0, 0);
   }
   else
   {
-   wakeup(source);
+   wakeup(source); //DFPLAYER_SET_NORMAL_MODE reserved & doesn't work here
   }
 }
 
@@ -660,7 +662,7 @@ void DFPlayer::reset()
       - 5, unknown state
 
     - module response:
-    - 7E FF 06 42 00 yy xx zz zz EF
+    - 7E FF 06 42 00 yy xx zz ww EF
       - yy=01 USB, yy=02 TF
         - xx=00 stop
         - xx=01 playing
@@ -943,39 +945,51 @@ uint8_t DFPlayer::getTotalFolders()
 /*
     getCommandStatus()
 
-    Status of last get???() command
+    Get player status after last TX command
 
     NOTE:
-    - 0x01, error module busy (this info is returned when the initialization is not done)
-    - 0x02, error module in sleep mode (supports only specified device in sleep mode)
-    - 0x03, error serial receiving error (request not fully received)
-    - 0x04, error checksum incorrect
-    - 0x05, error requested rack/folder is out of out of range
-    - 0x06, error requested track/folder is not found
-    - 0x07, error advert insertion error (inserting operation available when a track is being played)
-    - 0x08, error SD card reading failed (SD card pulled out or damaged)
-    - 0x09, error ???
-    - 0x0A, error entered sleep mode
+    - error values:
+      - 0x01, error module busy (this info is returned when the initialization is not done)
+      - 0x02, error module in sleep mode (supports only specified device in sleep mode)
+      - 0x03, error serial receiving error (request not fully received)
+      - 0x04, error checksum incorrect
+      - 0x05, error requested rack/folder is out of out of range
+      - 0x06, error requested track/folder is not found
+      - 0x07, error advert insertion error (inserting operation available when a track is being played)
+      - 0x08, error SD card reading failed (SD card pulled out or damaged)
+      - 0x09, error ???
+      - 0x0A, error entered sleep mode
 
-    - 0x0B, OK, return if command is accepted and feedback byte is set to 0x01
-    - 0x0C, OK, track playback is completed, module return this status automatically after the track has been played
-    - 0x0D, OK, ready after boot or reset with DL-byte current source???, module return this status automatically
-    - 0x00, unknown status
+    - extra values:
+      - 0x0B, OK, command is accepted (returned only if ACK/feedback byte is set to 0x01)
+      - 0x0C, OK, track playback is completed, module return this status automatically after the track has been played
+      - 0x0D, OK, ready after boot or reset with DL-byte current source???, module return this status automatically after boot or reset
+      - 0x00, unknown status
 */
 /**************************************************************************/
 uint8_t DFPlayer::getCommandStatus()
 {
-  if (_dataBuffer[3] == DFPLAYER_RETURN_ERROR)      {return _dataBuffer[6];} //see NOTE
+  switch (_dataBuffer[3])
+  {
+    case DFPLAYER_RETURN_ERROR:
+      return _dataBuffer[6]; //see NOTE
 
-  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_OK)    {return 0x0B;}
-  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_DONE)  {return 0x0C;}
-  if (_dataBuffer[3] == DFPLAYER_RETURN_CODE_READY) {return 0x0D;}
-                                                     return 0x00;
+    case DFPLAYER_RETURN_CODE_OK_ACK:
+      return 0x0B;
+
+    case DFPLAYER_RETURN_CODE_DONE:
+      return 0x0C;
+
+    case DFPLAYER_RETURN_CODE_READY:
+      return 0x0D;
+
+    default:
+      return 0x00;
+  }
 }
 
 
-
-
+/**********************************private*********************************/
 /**************************************************************************/
 /*
     _sendData()
@@ -983,7 +997,7 @@ uint8_t DFPlayer::getCommandStatus()
     Send data via Serial port
 
     NOTE:
-    - DFPlayer data frame format:
+    - DFPlayer TX data frame format:
       0      1    2    3    4    5   6   7     8     9-byte
       START, VER, LEN, CMD, ACK, DH, DL, SUMH, SUML, END
              -------- checksum --------
@@ -999,7 +1013,7 @@ void DFPlayer::_sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB)
   _dataBuffer[5] = dataMSB;
   _dataBuffer[6] = dataLSB;
 
-  int32_t checksum;
+  int16_t checksum;
 
   switch (_moduleType)
   {
@@ -1050,29 +1064,23 @@ void DFPlayer::_sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB)
     NOTE:
     - timeout for responses to requests 100msec..200msec
 
-    - DFPlayer data frame format:
+    - DFPlayer RX data frame format:
       0      1    2    3    4    5   6   7     8     9-byte
       START, VER, LEN, CMD, ACK, DH, DL, SUMH, SUML, END
 */
  /**************************************************************************/
-uint8_t DFPlayer::_readData()
+bool DFPlayer::_readData()
 {
-  memset(_dataBuffer, 0x00, DFPLAYER_UART_FRAME_SIZE);                          //clear data buffer
+  memset(_dataBuffer, 0x00, DFPLAYER_UART_FRAME_SIZE); //clear data buffer
 
-  _serial->flush();                                                             //clear serial FIFO
+  _serial->flush();                                    //clear serial FIFO
+  _serial->setTimeout(_threshold);                     //set maximum msec to wait for Serial.readBytes()
 
-  _serial->setTimeout(_threshold);                                              //set maximum msec to wait for Serial.readBytes()
+  /* read serial, wait for data during "setTimeout()" period than error (received less than expected) */
+  if (_serial->readBytes(_dataBuffer, DFPLAYER_UART_FRAME_SIZE) != DFPLAYER_UART_FRAME_SIZE) {return false;}
 
-  uint8_t dataSize = _serial->readBytes(_dataBuffer, DFPLAYER_UART_FRAME_SIZE); //read serial, wait for data during setTimeout() period
-
-  if (dataSize < DFPLAYER_UART_FRAME_SIZE)        {return 0;}                   //short answer (received less than expected)
-
-  if (_dataBuffer[0] != DFPLAYER_UART_START_BYTE) {return 1;}                   //start byte missing
-  if (_dataBuffer[1] != DFPLAYER_UART_VERSION)    {return 2;}                   //version byte missing
-  if (_dataBuffer[2] != DFPLAYER_UART_DATA_LEN)   {return 3;}                   //length byte missing
-  if (_dataBuffer[9] != DFPLAYER_UART_END_BYTE)   {return 4;}                   //end byte missing
-
-                                                   return 5;                    //OK, no errors!!!
+  /* check for start byte missing, version byte missing, length byte missing, end byte missing */
+  return ((_dataBuffer[0] == DFPLAYER_UART_START_BYTE) && (_dataBuffer[1] == DFPLAYER_UART_VERSION) && (_dataBuffer[2] == DFPLAYER_UART_DATA_LEN) && (_dataBuffer[9] == DFPLAYER_UART_END_BYTE));
 }
 
 
@@ -1088,6 +1096,6 @@ uint8_t DFPlayer::_readData()
  /**************************************************************************/
 uint16_t DFPlayer::_getResponse(uint8_t command)
 {
-  if ((_readData() == 5) && (_dataBuffer[3] == command)) {return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6];}
-                                                          return 0;
+  if ((_readData() == true) && (_dataBuffer[3] == command)) {return ((uint16_t)_dataBuffer[5] << 8) | _dataBuffer[6];} //return DH, DL
+                                                             return 0;
 }
