@@ -21,8 +21,8 @@
    - if you hear a loud noise, add a 1K resistor in series with DFPlayer TX pin
    - move the jumper from right to left to automatically switch the amplifier to standby
 
-   Frameworks & Libraries:
-   ESP8266 Core      -  https://github.com/esp8266/Arduino
+   Framework:
+   ESP8266 Core - https://github.com/esp8266/Arduino
 
 
    GNU GPL license, all text above must be included in any redistribution,
@@ -60,9 +60,9 @@ uint8_t response = 0;
  /**************************************************************************/
 void setup()
 {
-  Serial.begin(MP3_SERIAL_SPEED, SERIAL_8N1);                     //hardware serial on GPIO01(TX) & GPIO03(RX) after boot
+  Serial.begin(MP3_SERIAL_SPEED, SERIAL_8N1);                  //hardware serial on GPIO01(TX) & GPIO03(RX) after boot
 
-  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_MINI, false); //DFPLAYER_MINI see NOTE, false=no response from module after the command
+  mp3.begin(Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_MINI, false); //DFPLAYER_MINI see NOTE, false=no response from module after the command
 
   Serial.swap();     //now hardware serial on GPIO15(TX) & GPIO13(RX)
   Serial.flush();    //clear serial library buffer, ALWAYS CLEAN BUFFER AFTER SERIAL SWAP!!!
