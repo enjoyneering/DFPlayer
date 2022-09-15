@@ -35,11 +35,10 @@
 #include <DFPlayer.h>
 
 
-#define MP3_RX_PIN              10    //PA0
-#define MP3_TX_PIN              11    //PA1
-#define MP3_SERIAL_SPEED        9600  //DFPlayer Mini suport only 9600-baud
-#define MP3_SERIAL_BUFFER_SIZE  32    //software serial buffer size in bytes, to send 8-bytes you need 11-bytes buffer (start byte+8-data bytes+parity-byte+stop-byte=11-bytes)
-#define MP3_SERIAL_TIMEOUT      100   //average DFPlayer response timeout 100msec..200msec
+#define MP3_RX_PIN          10    //PA0
+#define MP3_TX_PIN          11    //PA1
+#define MP3_SERIAL_SPEED    9600  //DFPlayer Mini suport only 9600-baud
+#define MP3_SERIAL_TIMEOUT  100   //average DFPlayer response timeout 100msec..200msec
 
 
 SoftwareSerial mp3Serial(MP3_RX_PIN, MP3_TX_PIN, false); //false=signal not inverted
