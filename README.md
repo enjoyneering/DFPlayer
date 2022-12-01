@@ -2,9 +2,9 @@
 
 # DFPlayer Mini
 This is small and fast Arduino library for:
- - DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200 chip, YX5300 chip or JL AAxxxx chip from Jieli)
- - FN-M10P, FN-M10P (FN6100 chip)
- - DFPlayer Mini HW-247A (GD3200B chip)
+ - DFPlayer Mini, MP3-TF-16P, FN-M16P (**YX5200** chip, **YX5300** chip or **JL AAxxxx** chip from Jieli)
+ - FN-M10P, FN-M10P (**FN6100** chip)
+ - DFPlayer Mini HW-247A (**GD3200B** chip)
 
 ![alt text][dfplayer_mini_mod_image]
 
