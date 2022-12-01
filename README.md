@@ -52,7 +52,7 @@ void stopAdvertFolder();
 void setVolume(uint8_t volume);
 void volumeUp();
 void volumeDown();
-void enableDAC(bool enable);
+void enableDAC(bool enable); //flase=mute/true=unmute
 void setDACGain(uint8_t gain, bool enable = true); //may not be supported by some modules
 void setEQ(uint8_t preset); //may not be supported by some modules
 
