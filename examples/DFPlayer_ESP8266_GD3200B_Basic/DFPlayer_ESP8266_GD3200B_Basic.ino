@@ -34,13 +34,14 @@
 #include <DFPlayer.h>
 
 
-#define MP3_RX_PIN          10    //PA0
-#define MP3_TX_PIN          11    //PA1
-#define MP3_SERIAL_SPEED    9600  //DFPlayer Mini suport only 9600-baud
-#define MP3_SERIAL_TIMEOUT  350   //average DFPlayer response timeout 100msec..400msec, (YX5200/AAxxxx)...(GD3200B/MH2024K)
+#define MP3_RX_PIN              4     //GPIO4/D2 to DFPlayer Mini TX
+#define MP3_TX_PIN              5     //GPIO5/D1 to DFPlayer Mini RX
+#define MP3_SERIAL_SPEED        9600  //DFPlayer Mini suport only 9600-baud
+#define MP3_SERIAL_BUFFER_SIZE  32    //software serial buffer size in bytes, to send 8-bytes you need 11-bytes buffer (start byte+8-data bytes+parity-byte+stop-byte=11-bytes)
+#define MP3_SERIAL_TIMEOUT      350   //average DFPlayer response timeout for GD3200B chip 350msec..400msec
 
 
-SoftwareSerial mp3Serial(MP3_RX_PIN, MP3_TX_PIN, false); //false=signal not inverted
+SoftwareSerial mp3Serial;
 DFPlayer       mp3;
 
 
@@ -75,21 +76,24 @@ void setup()
 {
   Serial.begin(115200);
 
-  mp3Serial.begin(MP3_SERIAL_SPEED);
+  mp3Serial.begin(MP3_SERIAL_SPEED, SWSERIAL_8N1, MP3_RX_PIN, MP3_TX_PIN, false, MP3_SERIAL_BUFFER_SIZE, 0); //false=signal not inverted, 0=ISR/RX buffer size (shared with serial TX buffer)
 
-  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_MINI, false); //"DFPLAYER_HW_247A" see NOTE, false=no feedback from module after the command
+  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_HW_247A, false); //"DFPLAYER_HW_247A" see NOTE, false=no feedback from module after the command
 
   mp3.stop();                             //if player was runing during ESP8266 reboot
+
   mp3.reset();                            //reset all setting to default
-  
+
   mp3.setSource(2);                       //1=USB-Disk, 2=TF-Card, 3=Aux, 4=Sleep, 5=NOR Flash
-  
+
   mp3.setEQ(0);                           //0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass
   mp3.setVolume(25);                      //0..30, module persists volume on power failure
 
   mp3.sleep();                            //inter sleep mode, 24mA
 
-  mp3Serial.listen();                     //enable interrupts on RX-pin for better response detection
+  mp3.wakeup(2);                          //exit sleep mode & initialize source 1=USB-Disk, 2=TF-Card, 3=Aux, 5=NOR Flash
+
+  mp3Serial.enableRx(true);               //enable interrupts on RX-pin for better response detection, less overhead than mp3Serial.listen()
 
   Serial.println(mp3.getStatus());        //0=stop, 1=playing, 2=pause, 3=sleep or standby, 4=communication error, 5=unknown state
   Serial.println(mp3.getVolume());        //0..30
@@ -98,7 +102,7 @@ void setup()
                                           //7=advert available while track is playing, 8=SD card not found, 9=???, 10=module sleep
                                           //11=OK command accepted, 12=OK playback completed, 13=OK module ready after reboot
 
-  mp3Serial.stopListening();              //disable interrupts on RX-pin
+  mp3Serial.enableRx(false);              //disable interrupts on RX-pin, less overhead than mp3Serial.listen()
 }
 
 
@@ -108,7 +112,7 @@ void setup()
 
     Main loop
 */
- /**************************************************************************/
+/**************************************************************************/
 void loop()
 {
   mp3.playTrack(1);     //play track #1, don’t copy 0003.mp3 and then 0001.mp3, because 0003.mp3 will be played firts
