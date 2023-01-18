@@ -8,27 +8,24 @@
    DFPlayer Mini features:
    - 3.2v..5.0v, typical 4.2v
    - 15mA without flash drive, typical 24mA
-   - 24-bit DAC
-   - 90dB output dynamic range
-   - SNR over 85dB
-   - micro SD card, up to 32GB (FAT16, FAT32)
+   - 24-bit DAC with 90dB output dynamic range and SNR over 85dB
+   - micro SD-card, up to 32GB (FAT16, FAT32)
    - USB-Disk up to 32GB (FAT16, FAT32)
+   - supports mp3 sampling rate 8KHz, 11.025KHz, 12KHz, 16KHz, 22.05KHz, 24KHz, 32KHz, 44.1KHz, 48KHz
    - supports up to 100 folders, each folder can be assigned to 001..255 songs
    - built-in 3W mono amplifier, NS8002 AB-Class with standby function
-   - UART to communicate
+   - UART to communicate, 9600bps (parity:none, data bits:8, stop bits:1, flow control:none)
 
    NOTE:
    - if you hear a loud noise, add a 1K resistor in series with DFPlayer TX-pin
 
    Frameworks & Libraries:
-   AVR     Core      -  https://github.com/arduino/ArduinoCore-avr
-   ATtiny  Core      -  https://github.com/SpenceKonde/ATTinyCore
-   ESP32   Core      -  https://github.com/espressif/arduino-esp32
-   ESP8266 Core      -  https://github.com/esp8266/Arduino
-   STM32   Core      -  https://github.com/stm32duino/Arduino_Core_STM32
-                     -  https://github.com/rogerclarkmelbourne/Arduino_STM32
-   SoftwareSerial    -  https://github.com/PaulStoffregen/SoftwareSerial
-   EspSoftwareSerial -  https://github.com/plerup/espsoftwareserial
+   Arduino Core      - https://github.com/arduino/Arduino/tree/master/hardware
+   ATtiny  Core      - https://github.com/SpenceKonde/ATTinyCore
+   ESP8266 Core      - https://github.com/esp8266/Arduino
+   ESP32   Core      - https://github.com/espressif/arduino-esp32
+   STM32   Core      - https://github.com/stm32duino/Arduino_Core_STM32
+   EspSoftwareSerial - https://github.com/plerup/espsoftwareserial
 
 
    GNU GPL license, all text above must be included in any redistribution,
@@ -59,14 +56,14 @@
 #define DFPLAYER_SET_VOL              0x06 //set volume, range 0..30
 #define DFPLAYER_SET_EQ               0x07 //0=Off, 1=Pop, 2=Rock, 3=Jazz, 4=Classic, 5=Bass (may not be supported by some modules)
 #define DFPLAYER_LOOP_TRACK           0x08 //playing & looping track number 0001..9999
-#define DFPLAYER_SET_PLAY_SRC         0x09 //1=USB-Disc, 2=TF-Card, 3=Aux, 4=???, 5=NOR-Flash, 6=Sleep (3..6 may not be supported by some modules)
+#define DFPLAYER_SET_PLAY_SRC         0x09 //1=USB-Disk, 2=TF-Card, 3=Aux, 4=sleep(YX5200)/NOR-Flash(GD3200), 5=NOR-Flash, 6=Sleep (3..6 may not be supported by some modules)
 #define DFPLAYER_SET_STANDBY_MODE     0x0A //put player in standby mode, not the same as sleep mode
 #define DFPLAYER_SET_NORMAL_MODE      0x0B //pull player out of standby mode (may not be supported by some modules)
 #define DFPLAYER_RESET                0x0C //reset module, set all settings to factory default
 #define DFPLAYER_RESUME_PLAYBACK      0x0D //resume playing current track
 #define DFPLAYER_PAUSE                0x0E //pause playing current track
 #define DFPLAYER_PLAY_FOLDER          0x0F //play track number 1..255 from folder number 1..99
-#define DFPLAYER_SET_DAC_GAIN         0x10 //set DAC output gain/output voltage swing
+#define DFPLAYER_SET_DAC_GAIN         0x10 //set DAC output gain/output voltage swing (may not be supported by some modules)
 #define DFPLAYER_REPEAT_ALL           0x11 //repeat playback all files in chronological order
 #define DFPLAYER_PLAY_MP3_FOLDER      0x12 //play track number 0001..9999 from "mp3" folder 
 #define DFPLAYER_PLAY_ADVERT_FOLDER   0x13 //interrupt current track & play track number 0001..9999 from "advert" folder, than resume current track
@@ -76,7 +73,8 @@
 #define DFPLAYER_REPEAT_FOLDER        0x17 //repeat playback folder number 01..99
 #define DFPLAYER_RANDOM_ALL_FILES     0x18 //play all tracks in random order
 #define DFPLAYER_LOOP_CURRENT_TRACK   0x19 //loop currently played track
-#define DFPLAYER_SET_DAC              0x1A //enable/disable DAC, 0=enable, 1=disable
+#define DFPLAYER_SET_DAC              0x1A //enable/disable DAC (mute/unmute), 0=enable, 1=disable
+#define DFPLAYER_PLAY_ADVERT_FOLDER_N 0x25 //interrupt current track & play track number 001..255 from "advert1".."advert9" folder, than resume current track (may not be supported by some modules)
 
 /* request command controls */
 #define DFPLAYER_GET_STATUS           0x42 //get current stutus, see NOTE
@@ -99,13 +97,17 @@
 #define DFPLAYER_RETURN_CODE_DONE     0x3D //track playback is is completed, module return this status automatically after the track has been played
 #define DFPLAYER_RETURN_CODE_READY    0x3F //ready after boot or reset, module return this status automatically after boot or reset
 
+/* misc */
+#define DFPLAYER_BOOT_DELAY           3000 //average player boot time 1500sec..3000msec, depends on SD-card size
+#define DFPLAYER_CMD_DELAY            350  //average read command timeout 100msec..350msec, (YX5200/AAxxxx)...(GD3200B/MH2024K)
+
 
 /* list of supported modules */
 typedef enum : uint8_t
 {
-  DFPLAYER_MINI        = 0x00, //DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200, YX5300, JL AAxxxx)
-  DFPLAYER_FN_X10P     = 0x01, //FN-M10P, FN-S10P (FN6100)
-  DFPLAYER_HW_247A     = 0x02, //DFPlayer Mini HW-247A (GD3200B)
+  DFPLAYER_MINI        = 0x00, //DFPlayer Mini, MP3-TF-16P, FN-M16P (YX5200 chip, YX5300 chip or JL AAxxxx chip from Jieli)
+  DFPLAYER_FN_X10P     = 0x01, //FN-M10P, FN-S10P (FN6100 chip)
+  DFPLAYER_HW_247A     = 0x02, //DFPlayer Mini HW-247A (GD3200B chip)
   DFPLAYER_NO_CHECKSUM = 0x03  //no checksum calculation, not recomended for MCU without external crystal oscillator
 }
 DFPLAYER_MODULE_TYPE;
@@ -114,11 +116,13 @@ DFPLAYER_MODULE_TYPE;
 class DFPlayer
 {
   public:
-   void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool response = false, bool bootDelay = true);
+   DFPlayer();
+
+   void begin(Stream& stream, uint16_t threshold = DFPLAYER_CMD_DELAY, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool feedback = false, bool bootDelay = true);
 
    void setModel(DFPLAYER_MODULE_TYPE = DFPLAYER_MINI);
    void setTimeout(uint16_t threshold);
-   void setResponse(bool enable);
+   void setFeedback(bool enable);
 
    void setSource(uint8_t source);
    void playTrack(uint16_t track);
@@ -132,6 +136,7 @@ class DFPlayer
    void playMP3Folder(uint16_t track);
    void play3000Folder(uint16_t track);
    void playAdvertFolder(uint16_t track);
+   void playAdvertFolder(uint8_t folder, uint8_t track);
    void stopAdvertFolder();
 
    void setVolume(uint8_t volume);
@@ -170,7 +175,7 @@ class DFPlayer
   private:
    Stream*              _serial;
    uint16_t             _threshold;                            //timeout responses, in msec
-   uint8_t              _dataBuffer[DFPLAYER_UART_FRAME_SIZE]; //shared buffer between tx & rx
+   uint8_t              _dataBuffer[DFPLAYER_UART_FRAME_SIZE]; //shared buffer between TX & RX
    DFPLAYER_MODULE_TYPE _moduleType;                           //DFPlayer or Clone, differ in how checksum is calculated
    bool                 _ack;                                  //true=request response from module after the command
 
