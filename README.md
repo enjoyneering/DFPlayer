@@ -11,14 +11,13 @@ This is small and fast Arduino library for:
 DFPlayer Mini features:
 - 3.2v..5.0v, typical 4.2v
 - average curren 24mA
-- 24-bit DAC
-- 90dB output dynamic range
-- SNR over 85dB
-- micro SD, card up to 32GB (FAT16, FAT32)
-- USB-Disk, up to 32GB (FAT16, FAT32)
+- 24-bit DAC with 90dB output dynamic range and SNR over 85dB
+- micro SD-card, up to 32GB (FAT16, FAT32)
+- USB-Disk up to 32GB (FAT16, FAT32)
+- supports mp3 sampling rate 8KHz, 11.025KHz, 12KHz, 16KHz, 22.05KHz, 24KHz, 32KHz, 44.1KHz, 48KHz
 - supports up to 100 folders, each folder can be assigned to 001..255 songs
 - built-in 3W mono amplifier, NS8002 AB-Class with standby function
-- UART to communicate
+- UART to communicate, 9600bps (parity: none/data bits: 8/stop bits: 1/flow control: none)
 
 NOTE:
 - If you hear a loud noise, add a 1K resistors in series with DFPlayer TX-pin & RX-pin.
@@ -29,11 +28,11 @@ NOTE:
 
 ## Library APIs supports all modules features:
 ```c++
-void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool response = false, bool bootDelay = true);
+void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool feedback = false, bool bootDelay = true);
 
 void setModel(DFPLAYER_MODULE_TYPE = DFPLAYER_MINI);
 void setTimeout(uint16_t threshold); //usually 100msec..200msec
-void setResponse(bool enable);
+void setFeedback(bool enable);
 
 void setSource(uint8_t source); //all sources may not be supported by some modules
 void playTrack(uint16_t track);
@@ -47,6 +46,7 @@ void playFolder(uint8_t folder, uint8_t track);
 void playMP3Folder(uint16_t track);
 void play3000Folder(uint16_t track); //may not be supported by some modules
 void playAdvertFolder(uint16_t track);
+void playAdvertFolder(uint8_t folder, uint8_t track); //may not be supported by some modules
 void stopAdvertFolder();
 
 void setVolume(uint8_t volume);
@@ -92,7 +92,7 @@ Supports:
 
 [license-badge]: https://img.shields.io/badge/License-GPLv3-blue.svg
 [license]:       https://choosealicense.com/licenses/gpl-3.0/
-[version]:       https://img.shields.io/badge/Version-2.1.0-green.svg
+[version]:       https://img.shields.io/badge/Version-3.0.0-green.svg
 [stars]:         https://img.shields.io/github/stars/enjoyneering/DFPlayer.svg
 [stargazers]:    https://github.com/enjoyneering/DFPlayer/stargazers
 [hit-count]:     https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fenjoyneering%2FDFPlayer%2Ftree%2Fmain&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false
