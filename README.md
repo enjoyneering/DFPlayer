@@ -9,7 +9,7 @@ This is small and fast Arduino library for:
 ![alt text][dfplayer_mini_mod_image]
 
 DFPlayer Mini features:
-- 3.2v..5.0v, typical 4.2v
+- +3.2v..+5.0v, typical +4.2v
 - average curren 24mA
 - 24-bit DAC with 90dB output dynamic range and SNR over 85dB
 - micro SD-card, up to 32GB (FAT16, FAT32)
