@@ -78,7 +78,7 @@ void setup()
 
   mp3Serial.begin(MP3_SERIAL_SPEED, SWSERIAL_8N1, MP3_RX_PIN, MP3_TX_PIN, false, MP3_SERIAL_BUFFER_SIZE, 0); //false=signal not inverted, 0=ISR/RX buffer size (shared with serial TX buffer)
 
-  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_MINI, false);                                            //DFPLAYER_MINI see NOTE, false=no response from module after the command
+  mp3.begin(mp3Serial, MP3_SERIAL_TIMEOUT, DFPLAYER_MINI, false); //"DFPLAYER_MINI" see NOTE, false=no response from module after the command
 
   mp3.stop();                             //if player was runing during ESP8266 reboot
 
