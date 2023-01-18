@@ -14,7 +14,7 @@ begin	KEYWORD2
 
 setModel	KEYWORD2
 setTimeout	KEYWORD2
-setResponse	KEYWORD2
+setFeedback	KEYWORD2
 
 setSource	KEYWORD2
 playTrack	KEYWORD2
