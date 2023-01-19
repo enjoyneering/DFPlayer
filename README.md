@@ -31,7 +31,7 @@ NOTE:
 void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool feedback = false, bool bootDelay = true);
 
 void setModel(DFPLAYER_MODULE_TYPE = DFPLAYER_MINI);
-void setTimeout(uint16_t threshold); //usually 100msec..200msec
+void setTimeout(uint16_t threshold); //usually 100msec..300msec for YX5200/AAxxxx chip & 300msec..500msec GD3200B/MH2024K chip
 void setFeedback(bool enable);
 
 void setSource(uint8_t source); //all sources may not be supported by some modules
