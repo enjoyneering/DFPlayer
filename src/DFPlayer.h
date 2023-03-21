@@ -99,7 +99,7 @@
 
 /* misc */
 #define DFPLAYER_BOOT_DELAY           3000 //average player boot time 1500sec..3000msec, depends on SD-card size
-#define DFPLAYER_CMD_DELAY            350  //average read command timeout 100msec..350msec, (YX5200/AAxxxx)...(GD3200B/MH2024K)
+#define DFPLAYER_CMD_DELAY            350  //average read command timeout 200msec..300msec for YX5200/AAxxxx chip & 350msec..500msec for GD3200B/MH2024K chip
 
 
 /* list of supported modules */
