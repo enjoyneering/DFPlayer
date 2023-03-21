@@ -37,7 +37,7 @@
 #define MP3_RX_PIN          10    //PA0
 #define MP3_TX_PIN          11    //PA1
 #define MP3_SERIAL_SPEED    9600  //DFPlayer Mini suport only 9600-baud
-#define MP3_SERIAL_TIMEOUT  350   //average DFPlayer response timeout 100msec..400msec, (YX5200/AAxxxx)...(GD3200B/MH2024K)
+#define MP3_SERIAL_TIMEOUT  350   //average DFPlayer response timeout 200msec..300msec for YX5200/AAxxxx chip & 350msec..500msec for GD3200B/MH2024K chip
 
 
 SoftwareSerial mp3Serial(MP3_RX_PIN, MP3_TX_PIN, false); //false=signal not inverted
