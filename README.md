@@ -28,7 +28,7 @@ NOTE:
 
 ## Library APIs supports all modules features:
 ```c++
-void begin(Stream& stream, uint16_t threshold = 100, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool feedback = false, bool bootDelay = true);
+void begin(Stream& stream, uint16_t threshold = 350, DFPLAYER_MODULE_TYPE = DFPLAYER_MINI, bool feedback = false, bool bootDelay = true);
 
 void setModel(DFPLAYER_MODULE_TYPE = DFPLAYER_MINI);
 void setTimeout(uint16_t threshold); //usually 200msec..300msec for YX5200/AAxxxx chip & 350msec..500msec for GD3200B/MH2024K chip
