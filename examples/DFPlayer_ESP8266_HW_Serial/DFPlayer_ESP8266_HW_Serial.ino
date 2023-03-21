@@ -34,7 +34,7 @@
 
 
 #define MP3_SERIAL_SPEED    9600 //DFPlayer Mini suport only 9600-baud
-#define MP3_SERIAL_TIMEOUT  350  //average DFPlayer response timeout 100msec..400msec, (YX5200/AAxxxx)...(GD3200B/MH2024K)
+#define MP3_SERIAL_TIMEOUT  350  //average DFPlayer response timeout 200msec..300msec for YX5200/AAxxxx chip & 350msec..500msec for GD3200B/MH2024K chip
 
 
 DFPlayer mp3;                    //connect DFPlayer RX-pin to GPIO15(TX) & DFPlayer TX-pin to GPIO13(RX)
