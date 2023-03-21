@@ -16,7 +16,7 @@ DFPlayer Mini features:
 - USB-Disk up to 32GB (FAT16, FAT32)
 - supports mp3 sampling rate 8KHz, 11.025KHz, 12KHz, 16KHz, 22.05KHz, 24KHz, 32KHz, 44.1KHz, 48KHz
 - supports up to 100 folders, each folder can be assigned to 001..255 songs
-- built-in 3W mono amplifier, NS8002 AB-Class with standby function
+- built-in 3W mono amplifier, NS8002 AB-Class with standby function, move jumper to STBY->BUSY (see picture above)
 - UART to communicate, 9600bps (parity: none/data bits: 8/stop bits: 1/flow control: none)
 
 NOTE:
