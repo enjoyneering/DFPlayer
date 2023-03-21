@@ -38,7 +38,7 @@
 #define MP3_TX_PIN              5     //GPIO5/D1 to DFPlayer Mini RX
 #define MP3_SERIAL_SPEED        9600  //DFPlayer Mini suport only 9600-baud
 #define MP3_SERIAL_BUFFER_SIZE  32    //software serial buffer size in bytes, to send 8-bytes you need 11-bytes buffer (start byte+8-data bytes+parity-byte+stop-byte=11-bytes)
-#define MP3_SERIAL_TIMEOUT      350   //average DFPlayer response timeout for GD3200B chip 350msec..400msec
+#define MP3_SERIAL_TIMEOUT      350   //average DFPlayer response timeout for GD3200B chip 350msec..500msec
 
 
 SoftwareSerial mp3Serial;
