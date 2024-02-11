@@ -1138,7 +1138,13 @@ void DFPlayer::_sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB)
 
       _serial->write(_dataBuffer, DFPLAYER_UART_FRAME_SIZE);
 
-      if (_moduleType == DFPLAYER_HW_247A) {delay(_threshold);}    //GD3200B/MH2024K chip so slow & need delay after write command
+      if (_moduleType == DFPLAYER_HW_247A) {    //GD3200B/MH2024K chip so slow & need delay after write command      
+            long waitTime = _threshold - (millis() - _lastSentMs);
+            if (waitTime>0) {
+              delay(waitTime);
+            }            
+            _lastSentMs = millis();
+      }
       break;
 
     case DFPLAYER_NO_CHECKSUM:

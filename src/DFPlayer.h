@@ -178,7 +178,8 @@ class DFPlayer
    uint8_t              _dataBuffer[DFPLAYER_UART_FRAME_SIZE]; //shared buffer between TX & RX
    DFPLAYER_MODULE_TYPE _moduleType;                           //DFPlayer or Clone, differ in how checksum is calculated
    bool                 _ack;                                  //true=request response from module after the command
-
+   unsigned long        _lastSentMs;                           //timestamp of last command sent
+    
    uint16_t _getResponse(uint8_t command);
    void     _sendData(uint8_t command, uint8_t dataMSB, uint8_t dataLSB);
    bool     _readData();
